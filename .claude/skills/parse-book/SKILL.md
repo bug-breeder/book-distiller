@@ -16,9 +16,9 @@ Parse the book at: $ARGUMENTS
 
 2. **Run the parser**
    ```bash
-   npx tsx src/cli.ts parse "$ARGUMENTS"
+   pnpm exec tsx src/cli.ts parse "$ARGUMENTS"
    ```
-   If it fails, report the error and suggest checking: file path, file extension (.epub or .pdf), and that `npm install` has been run.
+   If it fails, report the error and suggest checking: file path, file extension (.epub or .pdf), and that `pnpm install` has been run.
 
 3. **Read the generated metadata**
    The slug is derived from the book title (lowercase, hyphens). Read:

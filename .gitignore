@@ -1,5 +1,6 @@
 book-output/
 books/
+package-lock.json
 node_modules/
 dist/
 *.js.map

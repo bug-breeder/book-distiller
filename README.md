@@ -15,13 +15,14 @@ No Anthropic API key needed. All AI work runs inside your current Claude Code se
 
 - [Claude Code](https://claude.ai/code)
 - Node.js 18+
-- `npm install`
+- pnpm (`npm install -g pnpm`)
+- `pnpm install`
 
 ## Quickstart
 
 ```bash
 # 1. Install dependencies
-npm install
+pnpm install
 
 # 2. Parse a book (inside Claude Code)
 /parse-book ~/Books/deep-work.epub
@@ -42,7 +43,7 @@ npm install
 Or use the CLI directly:
 
 ```bash
-npx tsx src/cli.ts parse ~/Books/deep-work.epub
+pnpm exec tsx src/cli.ts parse ~/Books/deep-work.epub
 ```
 
 ## Skills
@@ -137,8 +138,8 @@ The CLI does zero AI work — it's pure TypeScript, fully testable. All intellig
 ## Development
 
 ```bash
-npm test          # Run all tests (29 tests, Vitest)
-npm run typecheck # TypeScript strict check
+pnpm test          # Run all tests (29 tests, Vitest)
+pnpm typecheck     # TypeScript strict check
 ```
 
 Tests use a Project Gutenberg EPUB fixture (`tests/fixtures/metamorphosis.epub`) and mocked `pdf-parse` — no internet required to run the test suite.

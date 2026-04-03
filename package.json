@@ -2,6 +2,10 @@
   "name": "book-distiller",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.10.0",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
   "scripts": {
     "parse": "tsx src/cli.ts parse",
     "test": "vitest run",

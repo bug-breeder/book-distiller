@@ -4,9 +4,9 @@ Parse PDF/EPUB books and generate deep summaries using Claude Code skills.
 
 ## Commands
 
-- **Parse a book:** `npx tsx src/cli.ts parse <file.epub|pdf>`
-- **Run tests:** `npm test`
-- **Typecheck:** `npm run typecheck`
+- **Parse a book:** `pnpm exec tsx src/cli.ts parse <file.epub|pdf>`
+- **Run tests:** `pnpm test`
+- **Typecheck:** `pnpm typecheck`
 
 ## Skills
 
