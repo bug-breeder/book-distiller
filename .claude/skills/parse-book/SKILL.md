@@ -16,7 +16,7 @@ Parse the book at: $ARGUMENTS
 
 2. **Run the parser**
    ```bash
-   npx tsx src/cli.ts parse $ARGUMENTS
+   npx tsx src/cli.ts parse "$ARGUMENTS"
    ```
    If it fails, report the error and suggest checking: file path, file extension (.epub or .pdf), and that `npm install` has been run.
 
