@@ -12,7 +12,7 @@ export async function parsePdf(filePath: string): Promise<ParseResult> {
   const buffer = await readFile(filePath);
   const data = await pdfParse(buffer);
 
-  const info = data.info as Record<string, unknown>;
+  const info = data.info as Record<string, unknown> | null;
   const title =
     (info?.Title as string) ||
     path.basename(filePath, path.extname(filePath));

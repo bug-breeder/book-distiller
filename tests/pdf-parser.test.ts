@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type PdfParse from 'pdf-parse';
 import { parsePdf } from '../src/parser/pdf-parser.js';
 
 vi.mock('pdf-parse', () => ({
@@ -27,7 +28,7 @@ describe('parsePdf', () => {
       text: 'Chapter 1\n\nFirst chapter content with enough words.\n\nChapter 2\n\nSecond chapter content.',
       numpages: 4,
       info: { Title: 'My Book', Author: 'Jane Doe' },
-    } as never);
+    } as unknown as PdfParse.Result);
 
     const result = await parsePdf('/fake/book.pdf');
     expect(result.chapters).toHaveLength(2);
@@ -40,7 +41,7 @@ describe('parsePdf', () => {
       text: 'Chapter 1\n\nContent.',
       numpages: 2,
       info: { Title: 'Great Book', Author: 'John Smith' },
-    } as never);
+    } as unknown as PdfParse.Result);
 
     const result = await parsePdf('/fake/book.pdf');
     expect(result.info.title).toBe('Great Book');
@@ -52,7 +53,7 @@ describe('parsePdf', () => {
       text: 'Chapter 1\n\nContent.',
       numpages: 2,
       info: {},
-    } as never);
+    } as unknown as PdfParse.Result);
 
     const result = await parsePdf('/fake/my-book.pdf');
     expect(result.info.title).toBe('my-book');
@@ -64,7 +65,7 @@ describe('parsePdf', () => {
       text: pages.join('\f'),
       numpages: 45,
       info: {},
-    } as never);
+    } as unknown as PdfParse.Result);
 
     const result = await parsePdf('/fake/no-headings.pdf');
     expect(result.chapters.length).toBeGreaterThan(1);
