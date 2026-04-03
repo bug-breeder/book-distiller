@@ -116,7 +116,7 @@ export default defineConfig({
 - [ ] **Step 4: Install dependencies**
 
 ```bash
-npm install
+pnpm install
 ```
 
 Expected: `node_modules/` created, no errors.
@@ -318,7 +318,7 @@ describe('splitByPageCount', () => {
 - [ ] **Step 2: Run tests — verify they FAIL**
 
 ```bash
-npm test -- tests/chapter-splitter.test.ts
+pnpm test -- tests/chapter-splitter.test.ts
 ```
 
 Expected: `Cannot find module '../src/parser/chapter-splitter.js'`
@@ -413,7 +413,7 @@ export function splitByPageCount(pages: string[], pageSize = 20): Chapter[] {
 - [ ] **Step 4: Run tests — verify they PASS**
 
 ```bash
-npm test -- tests/chapter-splitter.test.ts
+pnpm test -- tests/chapter-splitter.test.ts
 ```
 
 Expected: all tests pass.
@@ -506,7 +506,7 @@ describe('parseEpub', () => {
 - [ ] **Step 3: Run tests — verify they FAIL**
 
 ```bash
-npm test -- tests/epub-parser.test.ts
+pnpm test -- tests/epub-parser.test.ts
 ```
 
 Expected: `Cannot find module '../src/parser/epub-parser.js'`
@@ -582,7 +582,7 @@ export async function parseEpub(filePath: string): Promise<ParseResult> {
 - [ ] **Step 5: Run tests — verify they PASS**
 
 ```bash
-npm test -- tests/epub-parser.test.ts
+pnpm test -- tests/epub-parser.test.ts
 ```
 
 Expected: all tests pass.
@@ -687,7 +687,7 @@ describe('parsePdf', () => {
 - [ ] **Step 2: Run tests — verify they FAIL**
 
 ```bash
-npm test -- tests/pdf-parser.test.ts
+pnpm test -- tests/pdf-parser.test.ts
 ```
 
 Expected: `Cannot find module '../src/parser/pdf-parser.js'`
@@ -738,7 +738,7 @@ export async function parsePdf(filePath: string): Promise<ParseResult> {
 - [ ] **Step 4: Run tests — verify they PASS**
 
 ```bash
-npm test -- tests/pdf-parser.test.ts
+pnpm test -- tests/pdf-parser.test.ts
 ```
 
 Expected: all tests pass.
@@ -786,7 +786,7 @@ export async function parseBook(filePath: string) {
 - [ ] **Step 2: Verify typecheck passes**
 
 ```bash
-npm run typecheck
+pnpm typecheck
 ```
 
 Expected: no errors.
@@ -880,7 +880,7 @@ program.parse();
 - [ ] **Step 2: Run a smoke test against the fixture EPUB**
 
 ```bash
-npx tsx src/cli.ts parse tests/fixtures/metamorphosis.epub
+pnpm exec tsx src/cli.ts parse tests/fixtures/metamorphosis.epub
 ```
 
 Expected output (similar to):
@@ -899,7 +899,7 @@ Verify: `ls book-output/metamorphosis/raw-chapters/` shows chapter files. `cat b
 - [ ] **Step 3: Full test suite must still pass**
 
 ```bash
-npm test
+pnpm test
 ```
 
 Expected: all tests pass.
@@ -907,7 +907,7 @@ Expected: all tests pass.
 - [ ] **Step 4: Typecheck**
 
 ```bash
-npm run typecheck
+pnpm typecheck
 ```
 
 Expected: no errors.
@@ -945,9 +945,9 @@ Parse PDF/EPUB books and generate deep summaries using Claude Code skills.
 
 ## Commands
 
-- **Parse a book:** `npx tsx src/cli.ts parse <file.epub|pdf>`
-- **Run tests:** `npm test`
-- **Typecheck:** `npm run typecheck`
+- **Parse a book:** `pnpm exec tsx src/cli.ts parse <file.epub|pdf>`
+- **Run tests:** `pnpm test`
+- **Typecheck:** `pnpm typecheck`
 
 ## Skills
 
@@ -1075,9 +1075,9 @@ Parse the book at: $ARGUMENTS
 
 2. **Run the parser**
    ```bash
-   npx tsx src/cli.ts parse $ARGUMENTS
+   pnpm exec tsx src/cli.ts parse $ARGUMENTS
    ```
-   If it fails, report the error and suggest checking: file path, file extension (.epub or .pdf), and that `npm install` has been run.
+   If it fails, report the error and suggest checking: file path, file extension (.epub or .pdf), and that `pnpm install` has been run.
 
 3. **Read the generated metadata**
    The slug is derived from the book title (lowercase, hyphens). Read:
@@ -1557,7 +1557,7 @@ git commit -m "feat: add book-status skill"
 - [ ] **Step 1: Run full test suite**
 
 ```bash
-npm test
+pnpm test
 ```
 
 Expected: all tests pass with no failures.
@@ -1565,7 +1565,7 @@ Expected: all tests pass with no failures.
 - [ ] **Step 2: Typecheck**
 
 ```bash
-npm run typecheck
+pnpm typecheck
 ```
 
 Expected: no TypeScript errors.
@@ -1581,7 +1581,7 @@ Expected output should include all 22 files from the File Map at the top of this
 - [ ] **Step 4: Smoke test CLI on the fixture**
 
 ```bash
-npx tsx src/cli.ts parse tests/fixtures/metamorphosis.epub
+pnpm exec tsx src/cli.ts parse tests/fixtures/metamorphosis.epub
 ```
 
 Expected:

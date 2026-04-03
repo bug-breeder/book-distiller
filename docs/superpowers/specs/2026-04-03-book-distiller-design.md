@@ -78,7 +78,7 @@ book-distiller/
 ### CLI
 Single command only — no AI, no API calls:
 ```bash
-npx tsx src/cli.ts parse <file-path>
+pnpm exec tsx src/cli.ts parse <file-path>
 ```
 
 Outputs:
@@ -126,7 +126,7 @@ disable-model-invocation: true
 argument-hint: <path/to/book.epub|pdf>
 allowed-tools: Bash Read
 ```
-1. Runs `npx tsx src/cli.ts parse $ARGUMENTS`
+1. Runs `pnpm exec tsx src/cli.ts parse $ARGUMENTS`
 2. Reads `metadata.json` and reports title, author, chapter count, output location
 
 ### `/summarize-book <slug>`
@@ -315,7 +315,7 @@ Model ideal explanation in <details>.
 
 ```
 /parse-book ~/Books/deep-work.epub
-  └─ Bash: npx tsx src/cli.ts parse ...
+  └─ Bash: pnpm exec tsx src/cli.ts parse ...
        ├─ epub2 reads TOC → 18 chapters
        ├─ writes raw-chapters/chapter-01.md … chapter-18.md
        └─ writes metadata.json
@@ -349,9 +349,9 @@ Model ideal explanation in <details>.
 ## Phase 7: Project Configuration
 
 ### CLAUDE.md (concise)
-- Parse: `npx tsx src/cli.ts parse <file>`
+- Parse: `pnpm exec tsx src/cli.ts parse <file>`
 - Skills: `/parse-book`, `/summarize-book`, `/practice-book`, `/book-quiz`, `/book-status`
-- Test: `npm test`
+- Test: `pnpm test`
 - Code style: TypeScript strict, ES modules, async/await
 - CLI is parse-only; all AI work is in Claude Code skills
 - `book-output/` is git-ignored
