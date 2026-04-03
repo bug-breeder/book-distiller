@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import path from 'path';
 import { fileURLToPath } from 'url';
 import { parseEpub } from '../src/parser/epub-parser.js';
 

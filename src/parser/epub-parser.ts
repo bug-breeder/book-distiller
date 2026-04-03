@@ -1,4 +1,4 @@
-import epub from 'epub2';
+import { EPub } from 'epub2';
 import type { ParseResult, Chapter } from './types.js';
 import { countWords } from './chapter-splitter.js';
 
@@ -19,10 +19,9 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getChapterContent(book: any, id: string): Promise<string> {
+function getChapterContent(book: EPub, id: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    book.getChapterRaw(id, (err: Error | null, text: string | null) => {
+    book.getChapterRaw(id, (err: Error, text?: string) => {
       if (err) reject(err);
       else resolve(text ?? '');
     });
@@ -30,16 +29,16 @@ function getChapterContent(book: any, id: string): Promise<string> {
 }
 
 export async function parseEpub(filePath: string): Promise<ParseResult> {
-  const book = await epub.createAsync(filePath);
+  const book = await EPub.createAsync(filePath);
 
-  const title = (book.metadata.title as string) || 'Unknown Title';
-  const author = (book.metadata.creator as string) || 'Unknown Author';
-  const language = (book.metadata.language as string) || 'en';
+  const title = book.metadata.title || 'Unknown Title';
+  const author = book.metadata.creator || 'Unknown Author';
+  const language = book.metadata.language || 'en';
 
   const chapters: Chapter[] = [];
   let chapterNum = 1;
 
-  for (const item of book.flow as Array<{ id: string; title?: string }>) {
+  for (const item of book.flow) {
     if (!item.id) continue;
     try {
       const html = await getChapterContent(book, item.id);
@@ -51,8 +50,9 @@ export async function parseEpub(filePath: string): Promise<ParseResult> {
         content: text,
         wordCount: countWords(text),
       });
-    } catch {
-      // skip chapters that fail to load
+    } catch (err) {
+      // Non-fatal: some EPUBs include manifest entries that can't be read.
+      process.stderr.write(`[epub-parser] skipped item ${item.id}: ${err}\n`);
     }
   }
 
