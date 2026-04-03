@@ -1,0 +1,25 @@
+{
+  "name": "book-distiller",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "parse": "tsx src/cli.ts parse",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "epub2": "^3.0.2",
+    "fs-extra": "^11.2.0",
+    "pdf-parse": "^1.1.1",
+    "slugify": "^1.6.6"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}
