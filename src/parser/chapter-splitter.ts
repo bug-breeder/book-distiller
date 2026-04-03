@@ -1,10 +1,14 @@
 import type { Chapter } from './types.js';
 
-// Covers digits, roman numerals I–L, English number words
+// Covers digits, roman numerals I–L (1–50), English number words
 const NUM_WORDS =
   'one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty';
 const ROMAN =
-  'xl|xxxi{0,3}|xxx|xxi{0,3}|xx|xi{0,3}|ix|viii|vii|vi|iv|iii|ii|i';
+  'l|xlix|xlviii|xlvii|xlvi|xlv|xliv|xliii|xlii|xli|xl|' +
+  'xxxix|xxxviii|xxxvii|xxxvi|xxxv|xxxiv|xxxiii|xxxii|xxxi|xxx|' +
+  'xxix|xxviii|xxvii|xxvi|xxv|xxiv|xxiii|xxii|xxi|xx|' +
+  'xix|xviii|xvii|xvi|xv|xiv|xiii|xii|xi|x|' +
+  'ix|viii|vii|vi|v|iv|iii|ii|i';
 
 const CHAPTER_HEADING_RE = new RegExp(
   `^(chapter|part|section)\\s+(\\d+|${ROMAN}|${NUM_WORDS})(\\s*[:\\-–—].*)?$`,

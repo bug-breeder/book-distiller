@@ -68,6 +68,26 @@ describe('detectChapterBoundaries', () => {
     const text = 'Just plain text with no structure at all.';
     expect(detectChapterBoundaries(text)).toHaveLength(0);
   });
+
+  it('detects "Chapter V" (roman numeral V=5)', () => {
+    const text = 'Chapter V\n\nContent.';
+    const b = detectChapterBoundaries(text);
+    expect(b).toHaveLength(1);
+    expect(b[0].title).toBe('Chapter V');
+  });
+
+  it('detects "Chapter XIV" (roman numeral XIV=14)', () => {
+    const text = 'Chapter XIV\n\nContent.';
+    const b = detectChapterBoundaries(text);
+    expect(b).toHaveLength(1);
+    expect(b[0].title).toBe('Chapter XIV');
+  });
+
+  it('detects "Chapter XIX" (roman numeral XIX=19)', () => {
+    const text = 'Chapter XIX\n\nContent.';
+    const b = detectChapterBoundaries(text);
+    expect(b).toHaveLength(1);
+  });
 });
 
 describe('splitIntoChapters', () => {
