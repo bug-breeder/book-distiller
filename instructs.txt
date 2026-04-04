@@ -1,0 +1,276 @@
+# Book Parser & Deep Summary System — Claude Code Prompt
+
+> Paste the entire block below into Claude Code. It follows the "Explore → Plan → Implement" best practice from the Claude Code docs.
+
+---
+
+```
+ultrathink
+
+I want to build a comprehensive **Book Parser & Deep Summary System** as a Claude Code project with skills and subagents. This is a multi-phase project. Follow the explore-first-then-plan-then-code workflow. Do NOT jump straight to coding. Interview me if anything is ambiguous using the AskUserQuestion tool, but here is the full spec:
+
+---
+
+## PROJECT OVERVIEW
+
+A CLI tool + Claude Code skill system that:
+1. Parses PDF and EPUB files into structured chapter-by-chapter text
+2. Produces deep, retention-focused summaries for each chapter AND the whole book
+3. Generates practical exercises so the reader can internalize and apply what they learned
+4. Stores all output as organized markdown files in a `book-output/` directory
+
+---
+
+## PHASE 1: Book Parser (`src/parser/`)
+
+### Requirements
+- Support **PDF** parsing using `pdf-parse` (or `pdfjs-dist`) npm package
+- Support **EPUB** parsing using `epub2` or `epubjs` npm package
+- Auto-detect file type from extension
+- Extract raw text with metadata (title, author, language if available)
+- **Chapter splitting logic**:
+  - Primary: detect headings like "Chapter 1", "CHAPTER ONE", "Part I", "Section 1", roman numerals, etc. Use a robust regex + heuristic system.
+  - Secondary: for PDFs without clear chapter headings, use page-count heuristics (split every N pages) or detect large whitespace gaps / font-size changes if available.
+  - For EPUB: use the built-in table of contents (TOC / spine) as the chapter boundary — this is the most reliable method.
+  - Output: an array of `{ chapterNumber, chapterTitle, content, wordCount, pageRange? }` objects.
+- Save parsed output as `book-output/<book-slug>/raw-chapters/chapter-XX.md`
+- Save a `metadata.json` with book info and chapter index
+
+### Tech Stack
+- **Node.js / TypeScript** project
+- Use `commander` for CLI interface
+- Use `fs-extra` for file operations
+
+---
+
+## PHASE 2: Deep Summary Engine (`src/summarizer/`)
+
+### The Summary Philosophy — CRITICAL
+The summaries must NOT be shallow "this chapter talks about X" garbage. They must be deep enough that someone who reads ONLY the summary can:
+1. **Understand** the core concepts as if they read the chapter
+2. **Remember** the key ideas months later
+3. **Explain** the concepts to someone else
+4. **Apply** the knowledge in real situations
+
+### Summary Structure for EACH Chapter
+Generate a markdown file per chapter (`book-output/<book-slug>/summaries/chapter-XX-summary.md`) with these sections:
+
+```markdown
+# Chapter [N]: [Title]
+
+## 🧠 Core Thesis (1-2 sentences)
+The single most important idea of this chapter, stated clearly.
+
+## 📖 Detailed Breakdown
+For each major concept/argument in the chapter:
+### [Concept Name]
+- **What it is**: Clear explanation in plain language
+- **Why it matters**: Why the author included this, what problem it solves
+- **How it works**: The mechanism, process, or logic explained step by step
+- **Key quote or example**: The most memorable illustration from the text
+- **Connection**: How this links to other concepts in the book
+
+## 🔑 Key Takeaways (Bullet Points)
+- 5-10 distilled takeaways, each one actionable or memorable
+
+## 🗺️ Mental Model / Framework
+A conceptual framework, analogy, or mental model that captures the chapter's logic. Could be a flowchart description, a metaphor, or a decision tree.
+
+## 💡 "Aha!" Moments
+2-3 surprising insights or counterintuitive points that would make someone say "I never thought of it that way."
+
+## 🔗 Connections to Other Chapters
+How this chapter builds on previous ones and sets up future ones.
+
+## 📝 In My Own Words (ELI5)
+Explain the whole chapter as if to a smart 12-year-old. This forces clarity.
+```
+
+### Full Book Summary
+Also generate `book-output/<book-slug>/summaries/full-book-summary.md`:
+- Book thesis in 3 sentences
+- Chapter-by-chapter one-paragraph summaries
+- The book's core argument arc (how ideas build)
+- 10 most important ideas across the entire book
+- Who should read this and why
+- What the book does NOT cover (blind spots)
+
+---
+
+## PHASE 3: Practice Generator (`src/practice/`)
+
+### Requirements
+Generate `book-output/<book-slug>/practice/chapter-XX-practice.md` with:
+
+```markdown
+# Practice Exercises: Chapter [N]
+
+## 🧪 Comprehension Check (Test Understanding)
+5 questions that test whether you understood the chapter. NOT trivia — conceptual questions.
+- Each question followed by a detailed answer (hidden in a <details> tag)
+
+## 🔄 Apply It (Real-World Scenarios)
+3 scenarios where the reader must apply the chapter's knowledge to solve a realistic problem.
+- Scenario description
+- What you should consider
+- A model response (in <details> tag)
+
+## ✍️ Reflection Prompts (Deepen Thinking)
+3 open-ended questions that force the reader to connect the material to their own life/work.
+- e.g., "Think of a time when [concept] played out in your life. What would you do differently now?"
+
+## 🗣️ Teach It Back (Feynman Technique)
+A prompt asking the reader to explain [specific concept] in 3 sentences to someone with zero context. Then provide a model "ideal explanation" in <details>.
+
+## 🧩 Synthesis Challenge (Connect Chapters)
+1 exercise that requires combining knowledge from this chapter with previous chapters.
+
+## 📋 Action Items
+3 concrete things the reader can do THIS WEEK to put the chapter's lessons into practice.
+```
+
+Also generate `book-output/<book-slug>/practice/full-book-practice.md`:
+- 10-question comprehensive quiz across all chapters
+- 3 "capstone" scenarios requiring knowledge from multiple chapters
+- A "30-day implementation plan" for applying the book's teachings
+
+---
+
+## PHASE 4: Claude Code Skills (`.claude/skills/`)
+
+### Skill 1: `/parse-book`
+```
+.claude/skills/parse-book/SKILL.md
+```
+- `disable-model-invocation: true` (user-invoked only)
+- Arguments: `$ARGUMENTS` = file path to the PDF or EPUB
+- Runs the parser, shows progress, outputs chapter count and metadata
+- Example: `/parse-book ~/Books/atomic-habits.epub`
+
+### Skill 2: `/summarize-book`
+```
+.claude/skills/summarize-book/SKILL.md
+```
+- `disable-model-invocation: true`
+- Arguments: `$ARGUMENTS` = path to book-output folder OR book slug
+- Reads the raw chapters and produces all summaries
+- Should use a subagent per chapter for parallel processing if possible
+- Example: `/summarize-book atomic-habits`
+
+### Skill 3: `/practice-book`
+```
+.claude/skills/practice-book/SKILL.md
+```
+- `disable-model-invocation: true`
+- Arguments: `$ARGUMENTS` = book slug + optional chapter number
+- Generates practice exercises
+- Example: `/practice-book atomic-habits` or `/practice-book atomic-habits 3`
+
+### Skill 4: `/book-quiz`
+```
+.claude/skills/book-quiz/SKILL.md
+```
+- `disable-model-invocation: true`
+- Interactive quiz mode — reads the summaries and asks the user questions one at a time using the AskUserQuestion tool, gives feedback on their answers
+- Example: `/book-quiz atomic-habits`
+
+### Skill 5: `/book-status`
+```
+.claude/skills/book-status/SKILL.md
+```
+- Shows what books have been parsed, which have summaries, which have practice exercises
+- Reads `book-output/` directory structure
+
+---
+
+## PHASE 5: Subagent (`.claude/agents/`)
+
+### `book-analyst.md`
+A read-only subagent optimized for analyzing book content:
+- Model: sonnet
+- Tools: Read, Grep, Glob, Bash (read-only commands)
+- System prompt: Specialized in literary analysis, concept extraction, and educational content creation
+- Used by the summarize-book and practice-book skills for per-chapter analysis
+
+---
+
+## PHASE 6: Project Configuration
+
+### CLAUDE.md
+Create a CLAUDE.md at project root with:
+- Project purpose and structure
+- How to run: `npx tsx src/cli.ts parse <file>`, `npx tsx src/cli.ts summarize <slug>`, `npx tsx src/cli.ts practice <slug>`
+- Testing: `npm test` with vitest
+- Code style: TypeScript strict, ES modules, async/await, descriptive variable names
+- IMPORTANT: When generating summaries, be thorough and deep. Never produce shallow summaries.
+
+### package.json
+- TypeScript project with `tsx` for running
+- Dependencies: `pdf-parse`, `epub2` (or best epub parser), `commander`, `fs-extra`, `slugify`
+- Dev dependencies: `typescript`, `vitest`, `@types/node`, `@types/fs-extra`
+
+### tsconfig.json
+- Strict mode, ES2022 target, ESM modules
+
+---
+
+## IMPLEMENTATION INSTRUCTIONS
+
+1. **First**: Create the full project structure (directories, package.json, tsconfig, CLAUDE.md)
+2. **Second**: Implement the parser with tests — parse a sample PDF and EPUB to verify chapter splitting works
+3. **Third**: Implement the CLI interface
+4. **Fourth**: Create all 5 skills and the subagent
+5. **Fifth**: Create a sample test by parsing any freely available public domain book (e.g., download a Project Gutenberg EPUB)
+6. **Verify**: Run the parser on a test file, confirm chapters split correctly, confirm output directory structure is correct
+
+Write real, complete, working code. Do not use placeholder comments like "// implement this". Every function should be fully implemented.
+
+After each phase, run the relevant tests and fix any failures before moving on.
+```
+
+---
+
+## How to Use After Building
+
+Once Claude Code builds the project:
+
+```bash
+# Parse a book
+npx tsx src/cli.ts parse ~/Books/deep-work.epub
+
+# Or use the skill
+/parse-book ~/Books/deep-work.epub
+
+# Generate summaries
+/summarize-book deep-work
+
+# Generate practice exercises
+/practice-book deep-work
+
+# Interactive quiz
+/book-quiz deep-work
+
+# Check status of all books
+/book-status
+```
+
+## Output Structure
+```
+book-output/
+└── deep-work/
+    ├── metadata.json
+    ├── raw-chapters/
+    │   ├── chapter-01.md
+    │   ├── chapter-02.md
+    │   └── ...
+    ├── summaries/
+    │   ├── chapter-01-summary.md
+    │   ├── chapter-02-summary.md
+    │   ├── ...
+    │   └── full-book-summary.md
+    └── practice/
+        ├── chapter-01-practice.md
+        ├── chapter-02-practice.md
+        ├── ...
+        └── full-book-practice.md
+```

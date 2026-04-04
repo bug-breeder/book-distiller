@@ -1,0 +1,119 @@
+{
+  "slug": "influence",
+  "title": "Influence",
+  "author": "Cialdini, Robert B.",
+  "language": "en",
+  "sourceFile": "/Users/alanguyen/Code/Personal/book-distiller/books/influence.epub",
+  "parsedAt": "2026-04-03T16:59:35.749Z",
+  "chapterCount": 18,
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "chapterTitle": "Chapter 1",
+      "wordCount": 14,
+      "file": "chapter-01.md"
+    },
+    {
+      "chapterNumber": 2,
+      "chapterTitle": "Chapter 2",
+      "wordCount": 78,
+      "file": "chapter-02.md"
+    },
+    {
+      "chapterNumber": 3,
+      "chapterTitle": "Introduction",
+      "wordCount": 1299,
+      "file": "chapter-03.md"
+    },
+    {
+      "chapterNumber": 4,
+      "chapterTitle": "Chapter 1: Weapons of Influence",
+      "wordCount": 5345,
+      "file": "chapter-04.md"
+    },
+    {
+      "chapterNumber": 5,
+      "chapterTitle": "Chapter 2: Reciprocation: The Old Give and Take . . . and Take",
+      "wordCount": 13665,
+      "file": "chapter-05.md"
+    },
+    {
+      "chapterNumber": 6,
+      "chapterTitle": "Chapter 3: Commitment and Consistency: Hobgoblins of the Mind",
+      "wordCount": 19875,
+      "file": "chapter-06.md"
+    },
+    {
+      "chapterNumber": 7,
+      "chapterTitle": "Chapter 4: Social Proof: Truths Are Us",
+      "wordCount": 17039,
+      "file": "chapter-07.md"
+    },
+    {
+      "chapterNumber": 8,
+      "chapterTitle": "Chapter 5: Liking: The Friendly Thief",
+      "wordCount": 14015,
+      "file": "chapter-08.md"
+    },
+    {
+      "chapterNumber": 9,
+      "chapterTitle": "Chapter 6: Authority: Directed Deference",
+      "wordCount": 9316,
+      "file": "chapter-09.md"
+    },
+    {
+      "chapterNumber": 10,
+      "chapterTitle": "Chapter 7: Scarcity: The Rule of the Few",
+      "wordCount": 11491,
+      "file": "chapter-10.md"
+    },
+    {
+      "chapterNumber": 11,
+      "chapterTitle": "Epilogue",
+      "wordCount": 2441,
+      "file": "chapter-11.md"
+    },
+    {
+      "chapterNumber": 12,
+      "chapterTitle": "Notes",
+      "wordCount": 5029,
+      "file": "chapter-12.md"
+    },
+    {
+      "chapterNumber": 13,
+      "chapterTitle": "Bibliography",
+      "wordCount": 4499,
+      "file": "chapter-13.md"
+    },
+    {
+      "chapterNumber": 14,
+      "chapterTitle": "Searchable Terms",
+      "wordCount": 3739,
+      "file": "chapter-14.md"
+    },
+    {
+      "chapterNumber": 15,
+      "chapterTitle": "Acknowledgments",
+      "wordCount": 320,
+      "file": "chapter-15.md"
+    },
+    {
+      "chapterNumber": 16,
+      "chapterTitle": "About the Author",
+      "wordCount": 83,
+      "file": "chapter-16.md"
+    },
+    {
+      "chapterNumber": 17,
+      "chapterTitle": "Copyright",
+      "wordCount": 189,
+      "file": "chapter-17.md"
+    },
+    {
+      "chapterNumber": 18,
+      "chapterTitle": "About the Publisher",
+      "wordCount": 77,
+      "file": "chapter-18.md"
+    }
+  ]
+}

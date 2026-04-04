@@ -1,0 +1,41 @@
+{
+  "slug": "metamorphosis",
+  "title": "Metamorphosis",
+  "author": "Franz Kafka",
+  "language": "en",
+  "sourceFile": "/Users/alanguyen/Code/Personal/book-distiller/tests/fixtures/metamorphosis.epub",
+  "parsedAt": "2026-04-03T10:52:32.176Z",
+  "chapterCount": 5,
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "chapterTitle": "Chapter 1",
+      "wordCount": 170,
+      "file": "chapter-01.md"
+    },
+    {
+      "chapterNumber": 2,
+      "chapterTitle": "Chapter 2",
+      "wordCount": 7092,
+      "file": "chapter-02.md"
+    },
+    {
+      "chapterNumber": 3,
+      "chapterTitle": "Chapter 3",
+      "wordCount": 7474,
+      "file": "chapter-03.md"
+    },
+    {
+      "chapterNumber": 4,
+      "chapterTitle": "Chapter 4",
+      "wordCount": 7396,
+      "file": "chapter-04.md"
+    },
+    {
+      "chapterNumber": 5,
+      "chapterTitle": "Chapter 5",
+      "wordCount": 2986,
+      "file": "chapter-05.md"
+    }
+  ]
+}
