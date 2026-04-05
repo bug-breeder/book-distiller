@@ -4,7 +4,7 @@ description: Generate deep chapter summaries and full-book summary. Requires par
 disable-model-invocation: true
 effort: high
 argument-hint: <book-slug>
-allowed-tools: Read Write Agent
+allowed-tools: Read Write Agent Glob TaskCreate TaskUpdate
 ---
 
 ultrathink
@@ -24,11 +24,29 @@ You will embed its full contents in every delegation message.
 ### 3. Create output directory
 Ensure `book-output/$ARGUMENTS/summaries/` exists.
 
-### 4. Dispatch all chapter agents IN PARALLEL
-For EVERY chapter in the metadata, dispatch a `book-analyst` subagent using the Agent tool.
-**Launch all agents simultaneously** — do not wait for one before starting the next.
+### 4. Create progress tasks
+For every chapter in metadata, call TaskCreate with:
+- subject: `"[N/Total] Chapter Title"` — e.g. `"[3/26] The Law of Irrationality"`
 
-Each delegation message must be exactly:
+All tasks start as pending. N is the chapter's 1-based position in the metadata list. Total is the total chapter count.
+
+### 5. Process chapters sequentially
+For each chapter in order:
+
+**a. Check for existing output**
+Use Glob to check if `book-output/$ARGUMENTS/summaries/<chapter-slug>-summary.md` exists.
+
+Where `<chapter-slug>` = chapter file name with `-summary` appended (e.g. `chapter-03.md` → `chapter-03-summary.md`).
+
+- If the file **exists**: mark the chapter's task completed, print `[N/Total] "Chapter Title" — skipped (already done)`. Move to the next chapter.
+- If the file **does not exist**: continue to step b.
+
+**b. Dispatch one agent**
+Mark the chapter's task in_progress. Print `[N/Total] "Chapter Title" — processing...`
+
+Dispatch ONE `book-analyst` subagent using the Agent tool. Wait for it to complete before moving to the next chapter.
+
+Delegation message:
 ```
 Analyze: book-output/$ARGUMENTS/raw-chapters/<chapter.file>
 Write to: book-output/$ARGUMENTS/summaries/<chapter-slug>-summary.md
@@ -40,10 +58,13 @@ Template:
 <full contents of chapter-summary-template.md>
 ```
 
-Where `<chapter-slug>` = the chapter file name with `-summary` appended (e.g. `chapter-03.md` → `chapter-03-summary.md`).
+After the agent completes: mark the chapter's task completed. Print `[N/Total] "Chapter Title" — done`.
 
-### 5. Generate full-book summary
-After ALL chapter agents confirm completion, read every `chapter-XX-summary.md` file and write `book-output/$ARGUMENTS/summaries/full-book-summary.md` with this structure:
+**After all chapters:** print a summary line:
+`"X chapters processed, Y skipped. Re-run this command to resume if interrupted."`
+
+### 6. Generate full-book summary
+After ALL chapters are processed or skipped, read every `chapter-XX-summary.md` file and write `book-output/$ARGUMENTS/summaries/full-book-summary.md` with this structure:
 
 ```markdown
 # [Book Title] — Full Book Summary
@@ -68,5 +89,5 @@ After ALL chapter agents confirm completion, read every `chapter-XX-summary.md` 
 [Honest assessment of blind spots, outdated ideas, or topics the author avoids]
 ```
 
-### 6. Report completion
+### 7. Report completion
 List all generated files and suggest: "Next step: `/practice-book $ARGUMENTS`"
