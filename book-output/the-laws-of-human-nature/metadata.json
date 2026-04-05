@@ -1,0 +1,173 @@
+{
+  "slug": "the-laws-of-human-nature",
+  "title": "The Laws of Human Nature",
+  "author": "Greene, Robert",
+  "language": "en",
+  "sourceFile": "/home/anhng/code/projects/book-distiller/books/the-laws-of-human-nature.epub",
+  "parsedAt": "2026-04-04T09:09:34.493Z",
+  "chapterCount": 27,
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "chapterTitle": "Chapter 1",
+      "wordCount": 46,
+      "file": "chapter-01.md"
+    },
+    {
+      "chapterNumber": 2,
+      "chapterTitle": "Chapter 2",
+      "wordCount": 103,
+      "file": "chapter-02.md"
+    },
+    {
+      "chapterNumber": 3,
+      "chapterTitle": "Chapter 3",
+      "wordCount": 440,
+      "file": "chapter-03.md"
+    },
+    {
+      "chapterNumber": 4,
+      "chapterTitle": "Chapter 4",
+      "wordCount": 4783,
+      "file": "chapter-04.md"
+    },
+    {
+      "chapterNumber": 5,
+      "chapterTitle": "Chapter 5",
+      "wordCount": 12482,
+      "file": "chapter-05.md"
+    },
+    {
+      "chapterNumber": 6,
+      "chapterTitle": "Chapter 6",
+      "wordCount": 13968,
+      "file": "chapter-06.md"
+    },
+    {
+      "chapterNumber": 7,
+      "chapterTitle": "Chapter 7",
+      "wordCount": 13514,
+      "file": "chapter-07.md"
+    },
+    {
+      "chapterNumber": 8,
+      "chapterTitle": "Chapter 8",
+      "wordCount": 12999,
+      "file": "chapter-08.md"
+    },
+    {
+      "chapterNumber": 9,
+      "chapterTitle": "Chapter 9",
+      "wordCount": 8308,
+      "file": "chapter-09.md"
+    },
+    {
+      "chapterNumber": 10,
+      "chapterTitle": "Chapter 10",
+      "wordCount": 9649,
+      "file": "chapter-10.md"
+    },
+    {
+      "chapterNumber": 11,
+      "chapterTitle": "Chapter 11",
+      "wordCount": 13640,
+      "file": "chapter-11.md"
+    },
+    {
+      "chapterNumber": 12,
+      "chapterTitle": "Chapter 12",
+      "wordCount": 12994,
+      "file": "chapter-12.md"
+    },
+    {
+      "chapterNumber": 13,
+      "chapterTitle": "Chapter 13",
+      "wordCount": 13397,
+      "file": "chapter-13.md"
+    },
+    {
+      "chapterNumber": 14,
+      "chapterTitle": "Chapter 14",
+      "wordCount": 13604,
+      "file": "chapter-14.md"
+    },
+    {
+      "chapterNumber": 15,
+      "chapterTitle": "Chapter 15",
+      "wordCount": 13174,
+      "file": "chapter-15.md"
+    },
+    {
+      "chapterNumber": 16,
+      "chapterTitle": "Chapter 16",
+      "wordCount": 16535,
+      "file": "chapter-16.md"
+    },
+    {
+      "chapterNumber": 17,
+      "chapterTitle": "Chapter 17",
+      "wordCount": 15646,
+      "file": "chapter-17.md"
+    },
+    {
+      "chapterNumber": 18,
+      "chapterTitle": "Chapter 18",
+      "wordCount": 21109,
+      "file": "chapter-18.md"
+    },
+    {
+      "chapterNumber": 19,
+      "chapterTitle": "Chapter 19",
+      "wordCount": 15903,
+      "file": "chapter-19.md"
+    },
+    {
+      "chapterNumber": 20,
+      "chapterTitle": "Chapter 20",
+      "wordCount": 20290,
+      "file": "chapter-20.md"
+    },
+    {
+      "chapterNumber": 21,
+      "chapterTitle": "Chapter 21",
+      "wordCount": 19578,
+      "file": "chapter-21.md"
+    },
+    {
+      "chapterNumber": 22,
+      "chapterTitle": "Chapter 22",
+      "wordCount": 11385,
+      "file": "chapter-22.md"
+    },
+    {
+      "chapterNumber": 23,
+      "chapterTitle": "Chapter 23",
+      "wordCount": 399,
+      "file": "chapter-23.md"
+    },
+    {
+      "chapterNumber": 24,
+      "chapterTitle": "Chapter 24",
+      "wordCount": 1390,
+      "file": "chapter-24.md"
+    },
+    {
+      "chapterNumber": 25,
+      "chapterTitle": "Chapter 25",
+      "wordCount": 7484,
+      "file": "chapter-25.md"
+    },
+    {
+      "chapterNumber": 26,
+      "chapterTitle": "About the Author",
+      "wordCount": 53,
+      "file": "chapter-26.md"
+    },
+    {
+      "chapterNumber": 27,
+      "chapterTitle": "Chapter 27",
+      "wordCount": 29,
+      "file": "chapter-27.md"
+    }
+  ]
+}
