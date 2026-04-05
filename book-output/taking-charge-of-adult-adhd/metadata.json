@@ -1,0 +1,347 @@
+{
+  "slug": "taking-charge-of-adult-adhd",
+  "title": "Taking Charge of Adult ADHD",
+  "author": "Russell A. Barkley",
+  "language": "en",
+  "sourceFile": "/home/anhng/code/projects/book-distiller/books/taking-charge-of-adult-adhd.epub",
+  "parsedAt": "2026-04-05T04:34:56.216Z",
+  "chapterCount": 56,
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "chapterTitle": "Praise for Taking Charge of Adult ADHD",
+      "wordCount": 292,
+      "file": "chapter-01.md"
+    },
+    {
+      "chapterNumber": 2,
+      "chapterTitle": "Also from Russell A. Barkley",
+      "wordCount": 241,
+      "file": "chapter-02.md"
+    },
+    {
+      "chapterNumber": 3,
+      "chapterTitle": "Title Page",
+      "wordCount": 34,
+      "file": "chapter-03.md"
+    },
+    {
+      "chapterNumber": 4,
+      "chapterTitle": "Dedication",
+      "wordCount": 20,
+      "file": "chapter-04.md"
+    },
+    {
+      "chapterNumber": 5,
+      "chapterTitle": "Copyright Page",
+      "wordCount": 243,
+      "file": "chapter-05.md"
+    },
+    {
+      "chapterNumber": 6,
+      "chapterTitle": "Contents",
+      "wordCount": 346,
+      "file": "chapter-06.md"
+    },
+    {
+      "chapterNumber": 7,
+      "chapterTitle": "Acknowledgments",
+      "wordCount": 230,
+      "file": "chapter-07.md"
+    },
+    {
+      "chapterNumber": 8,
+      "chapterTitle": "Author’s Note",
+      "wordCount": 70,
+      "file": "chapter-08.md"
+    },
+    {
+      "chapterNumber": 9,
+      "chapterTitle": "Introduction",
+      "wordCount": 431,
+      "file": "chapter-09.md"
+    },
+    {
+      "chapterNumber": 10,
+      "chapterTitle": "Step One: To Get Started, Get Evaluated",
+      "wordCount": 487,
+      "file": "chapter-10.md"
+    },
+    {
+      "chapterNumber": 11,
+      "chapterTitle": "1. Is It Possible That You Have ADHD?",
+      "wordCount": 2739,
+      "file": "chapter-11.md"
+    },
+    {
+      "chapterNumber": 12,
+      "chapterTitle": "2. Can You Handle the Problem on Your Own?",
+      "wordCount": 1347,
+      "file": "chapter-12.md"
+    },
+    {
+      "chapterNumber": 13,
+      "chapterTitle": "3. Where Can You Go to Get Help?",
+      "wordCount": 913,
+      "file": "chapter-13.md"
+    },
+    {
+      "chapterNumber": 14,
+      "chapterTitle": "4. What Do You Need for the Evaluation?",
+      "wordCount": 1522,
+      "file": "chapter-14.md"
+    },
+    {
+      "chapterNumber": 15,
+      "chapterTitle": "5. What Will the Evaluation Tell You?",
+      "wordCount": 4421,
+      "file": "chapter-15.md"
+    },
+    {
+      "chapterNumber": 16,
+      "chapterTitle": "Step Two: Change Your Mindset: Know and Own Your ADHD",
+      "wordCount": 907,
+      "file": "chapter-16.md"
+    },
+    {
+      "chapterNumber": 17,
+      "chapterTitle": "6. Know Your ADHD",
+      "wordCount": 3143,
+      "file": "chapter-17.md"
+    },
+    {
+      "chapterNumber": 18,
+      "chapterTitle": "7. Resisting Impulses: The First Step in Self-Control",
+      "wordCount": 2120,
+      "file": "chapter-18.md"
+    },
+    {
+      "chapterNumber": 19,
+      "chapterTitle": "8. Self-Control: How to Get What You Want",
+      "wordCount": 2198,
+      "file": "chapter-19.md"
+    },
+    {
+      "chapterNumber": 20,
+      "chapterTitle": "9. Executive Functions: The Seven Abilities That Make Up Self-Control … and More",
+      "wordCount": 11148,
+      "file": "chapter-20.md"
+    },
+    {
+      "chapterNumber": 21,
+      "chapterTitle": "10. The Nature of ADHD and How You Can Master It",
+      "wordCount": 2007,
+      "file": "chapter-21.md"
+    },
+    {
+      "chapterNumber": 22,
+      "chapterTitle": "11. Own Your ADHD",
+      "wordCount": 3949,
+      "file": "chapter-22.md"
+    },
+    {
+      "chapterNumber": 23,
+      "chapterTitle": "Step Three: Change Your Brain: Medications for Mastering ADHD",
+      "wordCount": 412,
+      "file": "chapter-23.md"
+    },
+    {
+      "chapterNumber": 24,
+      "chapterTitle": "12. Why It Makes Sense to Try Medication",
+      "wordCount": 2599,
+      "file": "chapter-24.md"
+    },
+    {
+      "chapterNumber": 25,
+      "chapterTitle": "13. The Stimulants",
+      "wordCount": 5354,
+      "file": "chapter-25.md"
+    },
+    {
+      "chapterNumber": 26,
+      "chapterTitle": "14. The Nonstimulants",
+      "wordCount": 2404,
+      "file": "chapter-26.md"
+    },
+    {
+      "chapterNumber": 27,
+      "chapterTitle": "15. What to Expect from Treatment",
+      "wordCount": 3516,
+      "file": "chapter-27.md"
+    },
+    {
+      "chapterNumber": 28,
+      "chapterTitle": "Step Four: Change Your Life: Everyday Rules for Success",
+      "wordCount": 593,
+      "file": "chapter-28.md"
+    },
+    {
+      "chapterNumber": 29,
+      "chapterTitle": "16. Rule 1: Stop the Action!",
+      "wordCount": 1266,
+      "file": "chapter-29.md"
+    },
+    {
+      "chapterNumber": 30,
+      "chapterTitle": "17. Rule 2: See the Past … and Then the Future",
+      "wordCount": 1037,
+      "file": "chapter-30.md"
+    },
+    {
+      "chapterNumber": 31,
+      "chapterTitle": "18. Rule 3: Say the Past … and Then the Future",
+      "wordCount": 1293,
+      "file": "chapter-31.md"
+    },
+    {
+      "chapterNumber": 32,
+      "chapterTitle": "19. Rule 4: Externalize Key Information",
+      "wordCount": 2152,
+      "file": "chapter-32.md"
+    },
+    {
+      "chapterNumber": 33,
+      "chapterTitle": "20. Rule 5: Feel the Future",
+      "wordCount": 1790,
+      "file": "chapter-33.md"
+    },
+    {
+      "chapterNumber": 34,
+      "chapterTitle": "21. Rule 6: Break It Down … and Make It Matter",
+      "wordCount": 2134,
+      "file": "chapter-34.md"
+    },
+    {
+      "chapterNumber": 35,
+      "chapterTitle": "22. Rule 7: Make Problems External, Physical, and Manual",
+      "wordCount": 1589,
+      "file": "chapter-35.md"
+    },
+    {
+      "chapterNumber": 36,
+      "chapterTitle": "23. Rule 8: Have a Sense of Humor!",
+      "wordCount": 1087,
+      "file": "chapter-36.md"
+    },
+    {
+      "chapterNumber": 37,
+      "chapterTitle": "Step Five: Change Your Situation: Mastering ADHD in Specific Areas of Your Life",
+      "wordCount": 210,
+      "file": "chapter-37.md"
+    },
+    {
+      "chapterNumber": 38,
+      "chapterTitle": "24. Education",
+      "wordCount": 3854,
+      "file": "chapter-38.md"
+    },
+    {
+      "chapterNumber": 39,
+      "chapterTitle": "25. Work",
+      "wordCount": 5990,
+      "file": "chapter-39.md"
+    },
+    {
+      "chapterNumber": 40,
+      "chapterTitle": "26. Money",
+      "wordCount": 3018,
+      "file": "chapter-40.md"
+    },
+    {
+      "chapterNumber": 41,
+      "chapterTitle": "27. Relationships",
+      "wordCount": 3305,
+      "file": "chapter-41.md"
+    },
+    {
+      "chapterNumber": 42,
+      "chapterTitle": "28. Driving, Health, and Lifestyle Risks",
+      "wordCount": 4800,
+      "file": "chapter-42.md"
+    },
+    {
+      "chapterNumber": 43,
+      "chapterTitle": "29. Other Mental and Emotional Problems",
+      "wordCount": 2116,
+      "file": "chapter-43.md"
+    },
+    {
+      "chapterNumber": 44,
+      "chapterTitle": "30. Drugs and Crime",
+      "wordCount": 2569,
+      "file": "chapter-44.md"
+    },
+    {
+      "chapterNumber": 45,
+      "chapterTitle": "Appendix: A Closer Look at ADHD Symptoms",
+      "wordCount": 2286,
+      "file": "chapter-45.md"
+    },
+    {
+      "chapterNumber": 46,
+      "chapterTitle": "Resources",
+      "wordCount": 2682,
+      "file": "chapter-46.md"
+    },
+    {
+      "chapterNumber": 47,
+      "chapterTitle": "Index",
+      "wordCount": 6910,
+      "file": "chapter-47.md"
+    },
+    {
+      "chapterNumber": 48,
+      "chapterTitle": "About the Authors",
+      "wordCount": 88,
+      "file": "chapter-48.md"
+    },
+    {
+      "chapterNumber": 49,
+      "chapterTitle": "About Guilford Press",
+      "wordCount": 107,
+      "file": "chapter-49.md"
+    },
+    {
+      "chapterNumber": 50,
+      "chapterTitle": "Discover Related Guilford Books",
+      "wordCount": 26,
+      "file": "chapter-50.md"
+    },
+    {
+      "chapterNumber": 51,
+      "chapterTitle": "Keep reading for a FREE excerpt from Taking Charge of ADHD: The Complete, Authoritative Guide for Parents, Fourth Edition",
+      "wordCount": 201,
+      "file": "chapter-51.md"
+    },
+    {
+      "chapterNumber": 52,
+      "chapterTitle": "1. What Is Attention-Deficit/Hyperactivity Disorder?",
+      "wordCount": 17349,
+      "file": "chapter-52.md"
+    },
+    {
+      "chapterNumber": 53,
+      "chapterTitle": "Credit",
+      "wordCount": 91,
+      "file": "chapter-53.md"
+    },
+    {
+      "chapterNumber": 54,
+      "chapterTitle": "Chapter 54",
+      "wordCount": 20,
+      "file": "chapter-54.md"
+    },
+    {
+      "chapterNumber": 55,
+      "chapterTitle": "Chapter 55",
+      "wordCount": 120,
+      "file": "chapter-55.md"
+    },
+    {
+      "chapterNumber": 56,
+      "chapterTitle": "Chapter 56",
+      "wordCount": 37,
+      "file": "chapter-56.md"
+    }
+  ]
+}
