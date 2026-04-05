@@ -30,13 +30,16 @@ For every chapter in metadata, call TaskCreate with:
 
 All tasks start as pending. N is the chapter's 1-based position in the metadata list. Total is the total chapter count.
 
+Status lifecycle: `pending` (initial, set by TaskCreate) → `in_progress` (when dispatching) → `completed` (when done or skipped).
+
 ### 5. Process chapters sequentially
 For each chapter in order:
 
 **a. Check for existing output**
 Use Glob to check if `book-output/$ARGUMENTS/summaries/<chapter-slug>-summary.md` exists.
+If Glob returns a match → file exists → skip. If Glob returns no matches → file does not exist → dispatch agent.
 
-Where `<chapter-slug>` = chapter file name with `-summary` appended (e.g. `chapter-03.md` → `chapter-03-summary.md`).
+Where `<chapter-slug>` = chapter file name with the `.md` extension replaced by `-summary.md` (e.g. `chapter-03.md` → `chapter-03-summary.md`).
 
 - If the file **exists**: mark the chapter's task completed, print `[N/Total] "Chapter Title" — skipped (already done)`. Move to the next chapter.
 - If the file **does not exist**: continue to step b.
