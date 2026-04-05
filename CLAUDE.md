@@ -21,7 +21,7 @@ Parse PDF/EPUB books and generate deep summaries using Claude Code skills.
 ## Architecture
 
 - **CLI (`src/cli.ts`):** Parse command only — no AI. Outputs to `book-output/<slug>/`.
-- **Skills:** All AI work. Skills dispatch `book-analyst` subagents in parallel per chapter.
+- **Skills:** All AI work. Skills dispatch `book-analyst` subagents sequentially per chapter, skipping chapters with existing output files (resumable after rate-limit interruptions).
 - **`book-output/`:** Contains parsed chapters, summaries, practice files.
 
 ## Code Style
