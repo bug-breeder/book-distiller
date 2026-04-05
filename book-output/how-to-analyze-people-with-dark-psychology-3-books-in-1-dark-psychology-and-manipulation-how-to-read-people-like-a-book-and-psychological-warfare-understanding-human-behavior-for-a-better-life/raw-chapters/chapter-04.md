@@ -1,0 +1,9 @@
+# DARK PSYCHOLOGY AND MANIPULATION
+
+Unknown 
+ 
+ 
+ 
+ 
+ 
+             DARK PSYCHOLOGY AND MANIPULATION                 CHRISTOPHER KINGLER
