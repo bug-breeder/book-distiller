@@ -10,7 +10,7 @@ const ROMAN =
   'xix|xviii|xvii|xvi|xv|xiv|xiii|xii|xi|x|' +
   'ix|viii|vii|vi|v|iv|iii|ii|i';
 
-const CHAPTER_HEADING_RE = new RegExp(
+export const CHAPTER_HEADING_RE = new RegExp(
   `^(chapter|part|section)\\s+(\\d+|${ROMAN}|${NUM_WORDS})(\\s*[:\\-–—].*)?$`,
   'i'
 );
