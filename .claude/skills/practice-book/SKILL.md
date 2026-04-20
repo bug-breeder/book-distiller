@@ -55,9 +55,26 @@ Mark the chapter's task in_progress. Print `[N/Total] "Chapter Title" — proces
 
 Dispatch ONE `book-analyst` subagent using the Agent tool. Wait for it to complete before moving to the next chapter.
 
-Delegation message:
+**Determine delegation mode:**
+- If `metadata.sourceFile` ends with `.pdf` AND `chapter.pageRange` exists → **PDF mode**
+- Otherwise → **EPUB mode**
+
+**EPUB mode delegation message:**
 ```
 Analyze: book-output/$0/raw-chapters/<chapter.file>
+Write to: book-output/$0/practice/<chapter-slug>-practice.md
+Book: "<metadata.title>" by <metadata.author>
+Chapter title: <chapter.chapterTitle>
+Task: practice
+
+Template:
+<full contents of chapter-practice-template.md>
+```
+
+**PDF mode delegation message:**
+```
+Analyze (PDF): <metadata.sourceFile>
+Chapter pages: <chapter.pageRange.start>-<chapter.pageRange.end>
 Write to: book-output/$0/practice/<chapter-slug>-practice.md
 Book: "<metadata.title>" by <metadata.author>
 Chapter title: <chapter.chapterTitle>
