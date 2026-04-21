@@ -1,12 +1,15 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
+import { createRequire } from 'module';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import type { ParseResult, Chapter } from './types.js';
 import { CHAPTER_HEADING_RE } from './chapter-splitter.js';
 
-// Node.js: disable Web Worker (not available server-side)
-GlobalWorkerOptions.workerSrc = '';
+// Node.js: point to the bundled worker so pdfjs can run in-process (fake worker mode)
+const _require = createRequire(import.meta.url);
+const _pdfjsLegacyDir = path.dirname(_require.resolve('pdfjs-dist/legacy/build/pdf.mjs'));
+GlobalWorkerOptions.workerSrc = path.join(_pdfjsLegacyDir, 'pdf.worker.mjs');
 
 interface OutlineItem {
   title: string;
@@ -41,7 +44,11 @@ async function extractFromOutline(
       continue; // skip malformed destinations
     }
   }
-  return entries.length >= 2 ? entries : null;
+  // Deduplicate consecutive entries pointing to the same page (keep first)
+  const unique = entries.filter(
+    (e, i) => i === 0 || e.startPage !== entries[i - 1].startPage
+  );
+  return unique.length >= 2 ? unique : null;
 }
 
 /**
