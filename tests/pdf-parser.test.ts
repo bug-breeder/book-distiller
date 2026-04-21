@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { parsePdf } from '../src/parser/pdf-parser.js';
 
-vi.mock('pdfjs-dist', () => ({
+vi.mock('pdfjs-dist/legacy/build/pdf.mjs', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
   getDocument: vi.fn(),
 }));
+
+vi.mock('module', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('module')>();
+  return {
+    ...actual,
+    createRequire: () => ({ resolve: () => '/fake/pdf.worker.mjs' }),
+  };
+});
 
 vi.mock('fs/promises', async (importOriginal) => {
   const actual = await importOriginal<typeof import('fs/promises')>();
@@ -14,7 +22,7 @@ vi.mock('fs/promises', async (importOriginal) => {
   };
 });
 
-import { getDocument } from 'pdfjs-dist';
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 const mockGetDocument = vi.mocked(getDocument);
 
 type MockDoc = {
