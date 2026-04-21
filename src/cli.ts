@@ -35,7 +35,15 @@ program
 
       for (const chapter of result.chapters) {
         const filename = `chapter-${String(chapter.chapterNumber).padStart(2, '0')}.md`;
-        const content = `# ${chapter.chapterTitle}\n\n${chapter.content}`;
+        const content =
+          chapter.pageRange !== undefined && chapter.content === ''
+            ? [
+                `# ${chapter.chapterTitle}`,
+                '',
+                `> PDF source: pages ${chapter.pageRange.start}–${chapter.pageRange.end}`,
+                `> Content read directly from PDF by book-analyst agent.`,
+              ].join('\n')
+            : `# ${chapter.chapterTitle}\n\n${chapter.content}`;
         await fs.writeFile(path.join(chaptersDir, filename), content, 'utf-8');
       }
 
@@ -52,6 +60,7 @@ program
           chapterTitle: ch.chapterTitle,
           wordCount: ch.wordCount,
           file: `chapter-${String(ch.chapterNumber).padStart(2, '0')}.md`,
+          ...(ch.pageRange !== undefined ? { pageRange: ch.pageRange } : {}),
         })),
       };
 

@@ -23,6 +23,7 @@ export interface ChapterIndex {
   chapterTitle: string;
   wordCount: number;
   file: string;
+  pageRange?: { start: number; end: number };
 }
 
 export interface BookMetadata {
