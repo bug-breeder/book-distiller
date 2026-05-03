@@ -1,0 +1,331 @@
+{
+  "slug": "networks-book",
+  "title": "networks-book",
+  "author": "Unknown",
+  "language": "en",
+  "sourceFile": "/tmp/networks-book.pdf",
+  "parsedAt": "2026-04-21T01:58:50.738Z",
+  "chapterCount": 32,
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "chapterTitle": "Chapter 1",
+      "wordCount": 6000,
+      "file": "chapter-01.md",
+      "pageRange": {
+        "start": 15,
+        "end": 34
+      }
+    },
+    {
+      "chapterNumber": 2,
+      "chapterTitle": "Part I",
+      "wordCount": 600,
+      "file": "chapter-02.md",
+      "pageRange": {
+        "start": 35,
+        "end": 36
+      }
+    },
+    {
+      "chapterNumber": 3,
+      "chapterTitle": "Chapter 2",
+      "wordCount": 7200,
+      "file": "chapter-03.md",
+      "pageRange": {
+        "start": 37,
+        "end": 60
+      }
+    },
+    {
+      "chapterNumber": 4,
+      "chapterTitle": "Chapter 3",
+      "wordCount": 11400,
+      "file": "chapter-04.md",
+      "pageRange": {
+        "start": 61,
+        "end": 98
+      }
+    },
+    {
+      "chapterNumber": 5,
+      "chapterTitle": "Chapter 4",
+      "wordCount": 10200,
+      "file": "chapter-05.md",
+      "pageRange": {
+        "start": 99,
+        "end": 132
+      }
+    },
+    {
+      "chapterNumber": 6,
+      "chapterTitle": "Chapter 5",
+      "wordCount": 10200,
+      "file": "chapter-06.md",
+      "pageRange": {
+        "start": 133,
+        "end": 166
+      }
+    },
+    {
+      "chapterNumber": 7,
+      "chapterTitle": "Part II",
+      "wordCount": 600,
+      "file": "chapter-07.md",
+      "pageRange": {
+        "start": 167,
+        "end": 168
+      }
+    },
+    {
+      "chapterNumber": 8,
+      "chapterTitle": "Chapter 6",
+      "wordCount": 16200,
+      "file": "chapter-08.md",
+      "pageRange": {
+        "start": 169,
+        "end": 222
+      }
+    },
+    {
+      "chapterNumber": 9,
+      "chapterTitle": "Chapter 7",
+      "wordCount": 6000,
+      "file": "chapter-09.md",
+      "pageRange": {
+        "start": 223,
+        "end": 242
+      }
+    },
+    {
+      "chapterNumber": 10,
+      "chapterTitle": "Chapter 8",
+      "wordCount": 6000,
+      "file": "chapter-10.md",
+      "pageRange": {
+        "start": 243,
+        "end": 262
+      }
+    },
+    {
+      "chapterNumber": 11,
+      "chapterTitle": "Chapter 9",
+      "wordCount": 7800,
+      "file": "chapter-11.md",
+      "pageRange": {
+        "start": 263,
+        "end": 288
+      }
+    },
+    {
+      "chapterNumber": 12,
+      "chapterTitle": "Part III",
+      "wordCount": 600,
+      "file": "chapter-12.md",
+      "pageRange": {
+        "start": 289,
+        "end": 290
+      }
+    },
+    {
+      "chapterNumber": 13,
+      "chapterTitle": "Chapter 10",
+      "wordCount": 10200,
+      "file": "chapter-13.md",
+      "pageRange": {
+        "start": 291,
+        "end": 324
+      }
+    },
+    {
+      "chapterNumber": 14,
+      "chapterTitle": "Chapter 11",
+      "wordCount": 8400,
+      "file": "chapter-14.md",
+      "pageRange": {
+        "start": 325,
+        "end": 352
+      }
+    },
+    {
+      "chapterNumber": 15,
+      "chapterTitle": "Chapter 12",
+      "wordCount": 10200,
+      "file": "chapter-15.md",
+      "pageRange": {
+        "start": 353,
+        "end": 386
+      }
+    },
+    {
+      "chapterNumber": 16,
+      "chapterTitle": "Part IV",
+      "wordCount": 600,
+      "file": "chapter-16.md",
+      "pageRange": {
+        "start": 387,
+        "end": 388
+      }
+    },
+    {
+      "chapterNumber": 17,
+      "chapterTitle": "Chapter 13",
+      "wordCount": 6600,
+      "file": "chapter-17.md",
+      "pageRange": {
+        "start": 389,
+        "end": 410
+      }
+    },
+    {
+      "chapterNumber": 18,
+      "chapterTitle": "Chapter 14",
+      "wordCount": 12000,
+      "file": "chapter-18.md",
+      "pageRange": {
+        "start": 411,
+        "end": 450
+      }
+    },
+    {
+      "chapterNumber": 19,
+      "chapterTitle": "Chapter 15",
+      "wordCount": 900,
+      "file": "chapter-19.md",
+      "pageRange": {
+        "start": 451,
+        "end": 453
+      }
+    },
+    {
+      "chapterNumber": 20,
+      "chapterTitle": "Chapter 10 — essentially, the slots are the items being sold, and they’re being matched",
+      "wordCount": 12300,
+      "file": "chapter-20.md",
+      "pageRange": {
+        "start": 454,
+        "end": 494
+      }
+    },
+    {
+      "chapterNumber": 21,
+      "chapterTitle": "Part V",
+      "wordCount": 600,
+      "file": "chapter-21.md",
+      "pageRange": {
+        "start": 495,
+        "end": 496
+      }
+    },
+    {
+      "chapterNumber": 22,
+      "chapterTitle": "Chapter 16",
+      "wordCount": 7800,
+      "file": "chapter-22.md",
+      "pageRange": {
+        "start": 497,
+        "end": 522
+      }
+    },
+    {
+      "chapterNumber": 23,
+      "chapterTitle": "Chapter 17",
+      "wordCount": 10200,
+      "file": "chapter-23.md",
+      "pageRange": {
+        "start": 523,
+        "end": 556
+      }
+    },
+    {
+      "chapterNumber": 24,
+      "chapterTitle": "Chapter 18",
+      "wordCount": 5400,
+      "file": "chapter-24.md",
+      "pageRange": {
+        "start": 557,
+        "end": 574
+      }
+    },
+    {
+      "chapterNumber": 25,
+      "chapterTitle": "Part VI",
+      "wordCount": 600,
+      "file": "chapter-25.md",
+      "pageRange": {
+        "start": 575,
+        "end": 576
+      }
+    },
+    {
+      "chapterNumber": 26,
+      "chapterTitle": "Chapter 19",
+      "wordCount": 14400,
+      "file": "chapter-26.md",
+      "pageRange": {
+        "start": 577,
+        "end": 624
+      }
+    },
+    {
+      "chapterNumber": 27,
+      "chapterTitle": "Chapter 20",
+      "wordCount": 10200,
+      "file": "chapter-27.md",
+      "pageRange": {
+        "start": 625,
+        "end": 658
+      }
+    },
+    {
+      "chapterNumber": 28,
+      "chapterTitle": "Chapter 21",
+      "wordCount": 13200,
+      "file": "chapter-28.md",
+      "pageRange": {
+        "start": 659,
+        "end": 702
+      }
+    },
+    {
+      "chapterNumber": 29,
+      "chapterTitle": "Part VII",
+      "wordCount": 600,
+      "file": "chapter-29.md",
+      "pageRange": {
+        "start": 703,
+        "end": 704
+      }
+    },
+    {
+      "chapterNumber": 30,
+      "chapterTitle": "Chapter 22",
+      "wordCount": 13200,
+      "file": "chapter-30.md",
+      "pageRange": {
+        "start": 705,
+        "end": 748
+      }
+    },
+    {
+      "chapterNumber": 31,
+      "chapterTitle": "Chapter 23",
+      "wordCount": 12000,
+      "file": "chapter-31.md",
+      "pageRange": {
+        "start": 749,
+        "end": 788
+      }
+    },
+    {
+      "chapterNumber": 32,
+      "chapterTitle": "Chapter 24",
+      "wordCount": 13500,
+      "file": "chapter-32.md",
+      "pageRange": {
+        "start": 789,
+        "end": 833
+      }
+    }
+  ]
+}

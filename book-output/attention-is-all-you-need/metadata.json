@@ -1,0 +1,81 @@
+{
+  "slug": "attention-is-all-you-need",
+  "title": "attention-is-all-you-need",
+  "author": "Unknown",
+  "language": "en",
+  "sourceFile": "/tmp/attention-is-all-you-need.pdf",
+  "parsedAt": "2026-04-21T01:49:42.636Z",
+  "chapterCount": 7,
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "chapterTitle": "Introduction",
+      "wordCount": 0,
+      "file": "chapter-01.md",
+      "pageRange": {
+        "start": 2,
+        "end": 1
+      }
+    },
+    {
+      "chapterNumber": 2,
+      "chapterTitle": "Background",
+      "wordCount": 0,
+      "file": "chapter-02.md",
+      "pageRange": {
+        "start": 2,
+        "end": 1
+      }
+    },
+    {
+      "chapterNumber": 3,
+      "chapterTitle": "Model Architecture",
+      "wordCount": 1200,
+      "file": "chapter-03.md",
+      "pageRange": {
+        "start": 2,
+        "end": 5
+      }
+    },
+    {
+      "chapterNumber": 4,
+      "chapterTitle": "Why Self-Attention",
+      "wordCount": 300,
+      "file": "chapter-04.md",
+      "pageRange": {
+        "start": 6,
+        "end": 6
+      }
+    },
+    {
+      "chapterNumber": 5,
+      "chapterTitle": "Training",
+      "wordCount": 300,
+      "file": "chapter-05.md",
+      "pageRange": {
+        "start": 7,
+        "end": 7
+      }
+    },
+    {
+      "chapterNumber": 6,
+      "chapterTitle": "Results",
+      "wordCount": 600,
+      "file": "chapter-06.md",
+      "pageRange": {
+        "start": 8,
+        "end": 9
+      }
+    },
+    {
+      "chapterNumber": 7,
+      "chapterTitle": "Conclusion",
+      "wordCount": 1800,
+      "file": "chapter-07.md",
+      "pageRange": {
+        "start": 10,
+        "end": 15
+      }
+    }
+  ]
+}
