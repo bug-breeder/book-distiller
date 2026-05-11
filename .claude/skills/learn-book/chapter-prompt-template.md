@@ -51,7 +51,7 @@ Before responding with completion, you MUST run these commands and they MUST all
 
 1. `python3 -c "import ast; ast.parse(open('{OUTPUT_PY_PATH}').read())"` — syntactic correctness
 2. `cd {REPO_ROOT} && bash .claude/skills/learn-book/static-checks.sh {OUTPUT_PY_PATH}` — bug-class scan
-3. `cd {REPO_ROOT}/prototypes/option-f && /Users/alanguyen/Library/Python/3.12/bin/marimo check {OUTPUT_PY_PATH}` — marimo's own validation
+3. `cd {REPO_ROOT}/prototypes/option-f && python3 -m marimo check {OUTPUT_PY_PATH}` — marimo's own validation
 
 If any check fails, fix the issue and re-run. Do not respond with completion until all three pass.
 
