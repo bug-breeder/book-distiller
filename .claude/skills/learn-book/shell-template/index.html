@@ -34,7 +34,13 @@
         const a = document.createElement("a");
         a.href = "#";
         a.dataset.path = ch.path;
-        a.innerHTML = `<span class="ch-num">${ch.number}</span><span class="ch-title">${ch.title}</span>`;
+        const num = document.createElement("span");
+        num.className = "ch-num";
+        num.textContent = ch.number;
+        const title = document.createElement("span");
+        title.className = "ch-title";
+        title.textContent = ch.title;
+        a.append(num, title);
         a.addEventListener("click", e => { e.preventDefault(); selectChapter(ch.path); });
         nav.appendChild(a);
       });
