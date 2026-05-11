@@ -30,15 +30,25 @@ except ImportError:
     sys.exit(2)
 
 
-def get_target_ws() -> str:
+def get_target_ws(url: str) -> str:
     data = json.load(urllib.request.urlopen("http://127.0.0.1:9222/json/list", timeout=2))
-    page = next(t for t in data if t["type"] == "page")
-    return page["webSocketDebuggerUrl"]
+    # Exclude non-navigable targets (extensions, devtools, service workers)
+    pages = [
+        t for t in data
+        if t["type"] == "page"
+        and not t.get("url", "").startswith(("chrome-extension://", "devtools://", "chrome://"))
+    ]
+    if not pages:
+        raise StopIteration("no navigable page target found")
+    # Prefer a tab already at this URL (stripped of cache-buster), else first available
+    base = url.split("?")[0]
+    match = next((t for t in pages if t.get("url", "").split("?")[0] == base), None)
+    return (match or pages[0])["webSocketDebuggerUrl"]
 
 
 async def run(url: str, wait: int) -> int:
     try:
-        ws_url = get_target_ws()
+        ws_url = get_target_ws(url)
     except (urllib.error.URLError, OSError, StopIteration) as exc:
         print(f"cdp-verify: cannot reach Chrome on 9222: {exc}", file=sys.stderr)
         return 2
