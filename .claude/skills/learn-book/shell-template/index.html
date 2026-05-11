@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Shell</title>
+  <link rel="stylesheet" href="shell.css">
+</head>
+<body>
+  <aside id="sidebar">
+    <h1 id="book-title">Loading…</h1>
+    <nav id="chapter-nav"></nav>
+  </aside>
+  <main id="content">
+    <iframe id="chapter-frame" src="about:blank" title="Chapter content"></iframe>
+  </main>
+
+  <script>
+    async function init() {
+      const manifest = await fetch("chapters.json").then(r => r.json());
+      document.getElementById("book-title").textContent = manifest.title || "Book";
+      const nav = document.getElementById("chapter-nav");
+      const frame = document.getElementById("chapter-frame");
+
+      function selectChapter(path) {
+        frame.src = path + "index.html";
+        document.querySelectorAll("#chapter-nav a").forEach(a => {
+          a.classList.toggle("active", a.dataset.path === path);
+        });
+        history.replaceState({}, "", "?ch=" + encodeURIComponent(path));
+      }
+
+      manifest.chapters.forEach((ch, i) => {
+        const a = document.createElement("a");
+        a.href = "#";
+        a.dataset.path = ch.path;
+        a.innerHTML = `<span class="ch-num">${ch.number}</span><span class="ch-title">${ch.title}</span>`;
+        a.addEventListener("click", e => { e.preventDefault(); selectChapter(ch.path); });
+        nav.appendChild(a);
+      });
+
+      // Restore from URL or start with chapter 1
+      const requested = new URLSearchParams(location.search).get("ch");
+      const initial = manifest.chapters.find(c => c.path === requested) || manifest.chapters[0];
+      if (initial) selectChapter(initial.path);
+
+      // Register the service worker (best-effort; secure-context-required)
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(err => console.warn("sw register failed", err));
+      }
+    }
+
+    init().catch(err => {
+      document.body.innerHTML = "<pre>Shell init failed: " + (err && err.message) + "</pre>";
+    });
+  </script>
+</body>
+</html>
