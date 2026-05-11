@@ -228,8 +228,8 @@ After all chapters are processed:
   "title": "<book title from metadata>",
   "slug": "$SLUG",
   "chapters": [
-    {"number": 1, "title": "<chapter title>", "path": "<chapter-slug>/"},
-    {"number": 2, "title": "<chapter title>", "path": "<chapter-slug>/"}
+    {"number": 1, "title": "<chapter title>", "path": "dist/<chapter-slug>/"},
+    {"number": 2, "title": "<chapter title>", "path": "dist/<chapter-slug>/"}
   ]
 }
 ```
