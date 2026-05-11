@@ -58,7 +58,7 @@ async def run(url: str, wait: int) -> int:
         await send("Page.enable")
         await send("Page.navigate", {"url": url})
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         end = loop.time() + wait
         errors = []
         while loop.time() < end:
