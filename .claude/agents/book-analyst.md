@@ -18,7 +18,7 @@ Each delegation message contains one of two formats:
 - **Write to:** path where you must write the output file
 - **Book:** title and author
 - **Chapter title:** the chapter's title
-- **Task:** either `summary` or `practice`
+- **Task:** `lesson` (also supports legacy `summary` / `practice`)
 - **Template:** the exact structure to follow
 
 ### PDF mode (visual — for math, diagrams, equations):
@@ -27,7 +27,7 @@ Each delegation message contains one of two formats:
 - **Write to:** path where you must write the output file
 - **Book:** title and author
 - **Chapter title:** the chapter's title
-- **Task:** either `summary` or `practice`
+- **Task:** `lesson` (also supports legacy `summary` / `practice`)
 - **Template:** the exact structure to follow
 
 ## How to proceed
@@ -72,3 +72,12 @@ Your output must be deep enough that someone who reads ONLY your output can:
 - Network graphs and flow charts — explain the topology, the nodes, the edges, and what the structure represents
 
 "This chapter discusses X" is a failure. Go deep on mechanisms, the author's reasoning, concrete examples, and real-world implications. Depth over brevity — these summaries are meant to replace re-reading.
+
+## Lesson task (the tutor's prep)
+
+When **Task: lesson**, follow the lesson-note template exactly. Two non-negotiable rules:
+
+1. **Figures, tables, and equations are referenced by LOCATION, not redrawn.** For every figure/table/diagram/equation the chapter uses to make a point, record its label, its location (PDF: page number — write "around p. X" if unsure; EPUB: section/heading anchor), and one line on what to look for. The reader will open the real artifact — your job is to point precisely and say why it matters.
+2. **Real-life applications only when genuine.** Include an `- **Application:**` line only when the chapter actually supports a concrete real-world use. If it does not, omit the line entirely. Never fabricate an application.
+
+The **Review items** section MUST use the exact pipe format from the template (`- id: ... | concept: ... | Q: ... | A: ...`) so the progress CLI can parse it.
