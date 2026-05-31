@@ -1,13 +1,13 @@
 # Book Distiller
 
-A Claude Code–native system that turns PDF and EPUB books into deep, retention-focused summaries, practice exercises, and interactive quizzes — all powered by Claude Code skills running in parallel.
+A Claude Code–native system that turns PDF and EPUB books into a live, ADHD-friendly AI tutoring experience — concept-by-concept teaching, Feynman-technique handoffs, and spaced-repetition progress tracking.
 
 ## How it works
 
 1. **Parse** — a TypeScript CLI extracts chapters from your book into structured markdown files
-2. **Summarize** — a Claude Code skill dispatches one AI agent per chapter in parallel, each producing a deep summary
-3. **Practice** — another skill generates comprehension questions, real-world scenarios, and reflection prompts per chapter
-4. **Quiz** — an interactive skill tests your retention with AskUserQuestion feedback loops
+2. **Prep** — `/tutor-prep` dispatches one AI agent per chapter to distill each into a lesson note: teaching arc, concept explanations, figure-location pointers, and review Q&A pairs
+3. **Tutor** — `/tutor` runs a live session: spaced reviews first, then concept-by-concept teaching with figure references, then a Feynman handoff (a `curious-student` subagent probes your explanation), and finally a gap report + progress update
+4. **Track** — a deterministic `progress` CLI manages `progress.json`: mastery status, spaced-repetition queue, session log
 
 No Anthropic API key needed. All AI work runs inside your current Claude Code session.
 
@@ -27,23 +27,24 @@ pnpm install
 # 2. Parse a book (inside Claude Code)
 /parse-book ~/Books/deep-work.epub
 
-# 3. Generate deep summaries
-/summarize-book deep-work
+# 3. Distill chapters into tutor lesson notes
+/tutor-prep deep-work
 
-# 4. Generate practice exercises
-/practice-book deep-work
+# 4. Start a live tutoring session
+/tutor deep-work
 
-# 5. Test your retention
-/book-quiz deep-work
-
-# 6. Check status of all books
+# 5. Check status of all books
 /book-status
 ```
 
-Or use the CLI directly:
+Or use the CLI directly for progress tracking (no AI):
 
 ```bash
 pnpm exec tsx src/cli.ts parse ~/Books/deep-work.epub
+pnpm exec tsx src/cli.ts progress show deep-work
+pnpm exec tsx src/cli.ts progress due deep-work
+pnpm exec tsx src/cli.ts progress record deep-work --id c1-q1 --result pass
+pnpm exec tsx src/cli.ts progress advance deep-work --chapter 1 --status mastered --gaps "concept X was fuzzy"
 ```
 
 ## Skills
@@ -51,10 +52,9 @@ pnpm exec tsx src/cli.ts parse ~/Books/deep-work.epub
 | Skill | Arguments | Purpose |
 |---|---|---|
 | `/parse-book` | `<path/to/book.epub\|pdf>` | Parse a book into raw chapters |
-| `/summarize-book` | `<book-slug>` | Generate deep chapter summaries + full-book summary |
-| `/practice-book` | `<book-slug> [chapter-N]` | Generate practice exercises (all chapters or one) |
-| `/book-quiz` | `<book-slug>` | Interactive 10-question quiz with scoring |
-| `/book-status` | — | Show all books and their completion status |
+| `/tutor-prep` | `<book-slug> [chapter-N]` | Distill chapters into tutor lesson notes (all or one) |
+| `/tutor` | `<book-slug>` | Live AI tutoring session: teach + Feynman + progress |
+| `/book-status` | — | Show all books and their tutoring progress |
 
 ## Output structure
 
@@ -65,42 +65,31 @@ book-output/
     ├── raw-chapters/
     │   ├── chapter-01.md
     │   └── chapter-N.md
-    ├── summaries/
-    │   ├── chapter-01-summary.md
-    │   ├── chapter-N-summary.md
-    │   └── full-book-summary.md
-    └── practice/
-        ├── chapter-01-practice.md
-        ├── chapter-N-practice.md
-        └── full-book-practice.md
+    ├── lessons/
+    │   ├── chapter-01-lesson.md   # Teaching arc, concepts, figures, review Q&A
+    │   └── chapter-N-lesson.md
+    └── progress.json              # Mastery status, spaced-repetition queue, session log
 ```
 
 `book-output/` is git-ignored — generated content stays local.
 
-## Summary depth
+## Lesson notes
 
-Each chapter summary follows a structured template:
+Each chapter lesson note (written by `book-analyst` following the template) contains:
 
-- **Core Thesis** — the single most important idea, stated precisely
-- **Detailed Breakdown** — every major concept with what/why/how/example/connection
-- **Key Takeaways** — 5–10 actionable, memorable points
-- **Mental Model** — a framework or analogy that captures the chapter's logic
-- **"Aha!" Moments** — counterintuitive insights
-- **Connections to Other Chapters** — how ideas build
-- **ELI5** — the whole chapter explained to a 12-year-old
+- **Teaching arc** — ordered list of concepts to cover, each with a one-line learning objective
+- **Concepts** — for each concept: plain-English explanation, why it matters, a check question + ideal answer, the most common misconception, and (when genuine) a real-life application
+- **Figures / Tables / Equations** — every visual or key equation referenced by location (PDF page number or EPUB section anchor) so the tutor can point you to the real artifact
+- **Review items** — active-recall Q&A pairs in the spaced-repetition format the `progress` CLI parses
 
-The full-book summary adds: thesis, argument arc, 10 most important ideas, who should read it, and blind spots.
+## Progress tracking
 
-## Practice exercises
+The `progress` CLI manages `progress.json` with no AI involvement:
 
-Each chapter gets:
-
-- **Comprehension Check** — 5 conceptual questions (not trivia) with detailed answers
-- **Apply It** — 3 real-world scenarios with model responses
-- **Reflection Prompts** — connect material to your own life/work
-- **Teach It Back** — Feynman technique prompt with model explanation
-- **Synthesis Challenge** — cross-chapter exercise
-- **Action Items** — 3 concrete things to do this week
+- `due <slug>` — list review items due today (JSON)
+- `record <slug> --id <id> --result pass|fail` — reschedule an item after review
+- `advance <slug> --chapter N --status mastered|in_progress --gaps "..."` — record chapter outcome, enqueue review items, bump current chapter
+- `show <slug>` — human-readable summary: mastered/total, current chapter, reviews due
 
 ## Architecture
 
@@ -112,20 +101,26 @@ src/
 │   ├── pdf-parser.ts      # pdf-parse + heading/page-based splitting
 │   ├── chapter-splitter.ts # Regex detection for chapter headings
 │   └── types.ts           # Shared TypeScript types
-└── cli.ts                 # parse command (Commander.js)
+├── progress/
+│   ├── types.ts           # Progress, ReviewItem, ChapterProgress types
+│   ├── schedule.ts        # Spaced-repetition scheduler (pure functions)
+│   ├── lessonNotes.ts     # Review-item parser for lesson note files
+│   ├── store.ts           # Load/save progress.json
+│   └── commands.ts        # due / record / advance / show command logic
+└── cli.ts                 # parse + progress subcommands (Commander.js, no AI)
 
 .claude/
 ├── agents/
-│   └── book-analyst.md    # Per-chapter analysis subagent (sonnet, effort: high)
+│   ├── book-analyst.md    # Per-chapter analysis subagent (sonnet, effort: high)
+│   └── curious-student.md # Feynman probe subagent — asks one question at a time
 └── skills/
     ├── parse-book/
-    ├── summarize-book/    # + chapter-summary-template.md
-    ├── practice-book/    # + chapter-practice-template.md
-    ├── book-quiz/
+    ├── tutor-prep/        # + lesson-note-template.md
+    ├── tutor/
     └── book-status/
 ```
 
-The CLI does zero AI work — it's pure TypeScript, fully testable. All intelligence lives in the Claude Code skills, which dispatch the `book-analyst` subagent in parallel (one per chapter) to keep the main context clean and make large books fast.
+The CLI does zero AI work — it's pure TypeScript, fully testable. All intelligence lives in the Claude Code skills: `/tutor-prep` dispatches `book-analyst` sequentially per chapter (skippable/resumable); `/tutor` runs the live session and dispatches `curious-student` for Feynman handoffs.
 
 ## Supported formats
 
@@ -138,7 +133,7 @@ The CLI does zero AI work — it's pure TypeScript, fully testable. All intellig
 ## Development
 
 ```bash
-pnpm test          # Run all tests (29 tests, Vitest)
+pnpm test          # Run all tests (Vitest)
 pnpm typecheck     # TypeScript strict check
 ```
 
