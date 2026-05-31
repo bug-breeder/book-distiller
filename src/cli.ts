@@ -7,6 +7,7 @@ import { parseBook } from './parser/index.js';
 import type { BookMetadata } from './parser/index.js';
 import { cmdDue, cmdRecord, cmdAdvance, cmdShow } from './progress/commands.js';
 import type { ChapterStatus } from './progress/types.js';
+import { figuresFromPdf } from './figures/extract.js';
 
 const program = new Command();
 
@@ -78,6 +79,29 @@ program
       console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
     }
+  });
+
+program
+  .command('figures <pdf> <start> <end>')
+  .description('List figure/table caption locations (exact PDF page numbers) in a page range')
+  .action(async (pdf: string, start: string, end: string) => {
+    const s = Number(start);
+    const e = Number(end);
+    if (!Number.isInteger(s) || !Number.isInteger(e) || s < 1 || e < s) {
+      console.error('Error: <start> and <end> must be positive integers with start <= end');
+      process.exit(1);
+    }
+    const absPath = path.resolve(pdf);
+    if (!(await fs.pathExists(absPath))) {
+      console.error(`Error: file not found: ${absPath}`);
+      process.exit(1);
+    }
+    const figs = await figuresFromPdf(absPath, s, e);
+    if (figs.length === 0) {
+      console.log('(none)');
+      return;
+    }
+    for (const f of figs) console.log(`${f.label} | p.${f.page} | ${f.caption}`);
   });
 
 const today = () => new Date().toISOString().slice(0, 10);

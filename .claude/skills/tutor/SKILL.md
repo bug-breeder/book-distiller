@@ -54,7 +54,12 @@ Template:
 <full contents of .claude/skills/tutor-prep/lesson-note-template.md>
 ```
 
-**PDF mode:**
+**PDF mode** — first compute authoritative figure locations so the analyst never guesses page numbers. Run:
+```bash
+pnpm exec tsx src/cli.ts figures "<metadata.sourceFile>" <chapter.pageRange.start> <chapter.pageRange.end>
+```
+Capture its stdout and paste it verbatim into the **Authoritative figure locations** block below.
+
 ```
 Analyze (PDF): <metadata.sourceFile>
 Chapter pages: <chapter.pageRange.start>-<chapter.pageRange.end>
@@ -62,6 +67,9 @@ Write to: book-output/$SLUG/lessons/<chapter-slug>-lesson.md
 Book: "<metadata.title>" by <metadata.author>
 Chapter title: <chapter.chapterTitle>
 Task: lesson
+
+Authoritative figure locations:
+<verbatim stdout of the `figures` command>
 
 Template:
 <full contents of .claude/skills/tutor-prep/lesson-note-template.md>
@@ -97,7 +105,9 @@ Then dispatch `curious-student` once more with `Mode: conclude` to get the `GAPS
 ### 8. Wrap-up
 **Before printing anything**, do the following in order:
 
-1. **Sanitize the GAPS string:** Remove any double-quote characters from the gap phrases (replace `"` with `'`) and ensure phrases are separated only by `;` — this keeps the shell command well-formed.
+1. **Build the gap list yourself, as exact concept names (do not just forward Sam's wording).**
+   You are the authority on which concepts are weak — you have two sources: (a) concepts the user missed during **Teach** (step 5) and (b) the gaps in Sam's `conclude` report. Sam reports gaps in prose (e.g. `BFS finds shortest path only, not all paths`); map each one to the **exact concept name from this chapter's Teaching arc** that it belongs to (here: `Distance and Breadth-First Search`). The review scheduler matches gaps against concept names by case-insensitive substring, so **every gap phrase MUST contain its concept name verbatim** — append a short note after it if useful (`Distance and Breadth-First Search — thought it finds all paths`). A gap that omits the concept name is silently ignored and the weak spot is lost (it would wait 3 days instead of resurfacing tomorrow).
+   Then **sanitize:** remove any double-quote characters (replace `"` with `'`) and separate entries only with `;`, so the shell command stays well-formed.
 
 2. **Persist the chapter result** (run this BEFORE printing anything — it saves the chapter and bumps `currentChapter`, so the work is saved even if the session ends right after):
    `pnpm exec tsx src/cli.ts progress advance $SLUG --chapter $CH --status <VERDICT> --gaps "<semicolon-joined GAPS>"`

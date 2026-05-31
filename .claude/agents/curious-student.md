@@ -29,9 +29,11 @@ Respond with EXACTLY ONE short question and nothing else. Make it the single mos
 Respond with a short gap report in this exact shape, and nothing else:
 
 ```
-GAPS: <semicolon-separated list of concept names or short phrases the user was vague/wrong on; empty if none>
+GAPS: <semicolon-separated; empty if none>
 NAILED: <one sentence on what they explained well>
 VERDICT: mastered | in_progress
 ```
+
+**Each GAPS entry MUST begin with the exact concept NAME from the key points, copied verbatim** (same wording, e.g. `Distance and Breadth-First Search`), optionally followed by ` — <short note on what was vague/wrong>`. Separate entries with `;`. Do not paraphrase or shorten the concept name, and do not use double-quote characters. This exact-name rule is what lets the tutor's review scheduler resurface the weak concept sooner — a prose-only description (e.g. `confused BFS with all paths`) will not match and the weak spot will be lost.
 
 `VERDICT: mastered` only if there were no significant gaps. Keep it honest — the point of Feynman practice is to find the holes.

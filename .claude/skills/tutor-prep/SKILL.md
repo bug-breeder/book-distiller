@@ -61,6 +61,12 @@ Template:
 <full contents of lesson-note-template.md>
 ```
 
+**PDF mode** — first compute authoritative figure locations deterministically (the analyst must not guess page numbers). Run:
+```bash
+pnpm exec tsx src/cli.ts figures "<metadata.sourceFile>" <chapter.pageRange.start> <chapter.pageRange.end>
+```
+Capture its stdout (lines of `Figure/Table N.M | p.PAGE | caption`, or `(none)`) and paste it verbatim into the delegation's **Authoritative figure locations** block.
+
 **PDF mode delegation message:**
 ```
 Analyze (PDF): <metadata.sourceFile>
@@ -69,6 +75,9 @@ Write to: book-output/$0/lessons/<chapter-slug>-lesson.md
 Book: "<metadata.title>" by <metadata.author>
 Chapter title: <chapter.chapterTitle>
 Task: lesson
+
+Authoritative figure locations:
+<verbatim stdout of the `figures` command>
 
 Template:
 <full contents of lesson-note-template.md>
