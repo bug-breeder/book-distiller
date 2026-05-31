@@ -29,6 +29,7 @@ Each delegation message contains one of two formats:
 - **Chapter title:** the chapter's title
 - **Task:** `lesson`, `summary`, or `practice`
 - **Template:** the exact structure to follow
+- **Authoritative figure locations:** (optional) a list of `Figure/Table N.M | p.PAGE | caption` lines computed deterministically by the caller. When present, these page numbers are correct by construction — use them verbatim and do NOT recompute or second-guess them.
 
 ## How to proceed
 
@@ -43,17 +44,37 @@ Each delegation message contains one of two formats:
 
 ### If PDF mode (delegation has "Analyze (PDF):" field):
 
-1. Parse the page range from "Chapter pages:" — this gives you START and END page numbers
-2. Calculate read batches of at most 20 pages each:
-   - Batch 1: pages START to min(START+19, END)
-   - Batch 2: pages START+20 to min(START+39, END)
-   - Continue until END is covered
-3. Read ALL batches using the Read tool before generating any output. Use the `pages` parameter set to `"X-Y"` for each batch (e.g., `pages: "45-64"`)
-4. After reading all batches, synthesize everything you have seen — including equations, diagrams, tables, matrices, network graphs, and proofs — into a unified understanding of the chapter
-5. Ensure the output directory exists: `mkdir -p <parent-directory-of-output-path>`
-6. Generate output that strictly and completely follows the provided template
-7. Write the output to the path given in "Write to:" using the Write tool
-8. Respond with ONLY this one line: `✓ <output-filename> done (word count: NNNN)`
+Ground EVERYTHING in the actual file. **Never write from prior knowledge of the book** — if you happen to recognize the title, that is not permission to reconstruct it from memory. If you cannot read the file, you must fail loudly (step 2), not guess.
+
+1. Parse START and END page numbers from "Chapter pages:".
+
+2. **Extract the chapter text — your source of truth for the content.** Run via Bash, writing to a chapter-specific temp file (avoid collisions across chapters):
+   ```
+   pdftotext -f START -l END -layout "<pdf path>" "/tmp/ba-<output-filename>.txt"
+   ```
+   Then Read that text file and study it thoroughly.
+   - If `pdftotext` is missing, errors, or the extracted text is empty/garbled, STOP and respond with exactly `✗ cannot read PDF: <reason>`. Do NOT write a note from memory.
+
+3. **Get every figure/table's EXACT page — never count pages or estimate by hand.**
+   - If the delegation message includes an **Authoritative figure locations** block, use those `Figure/Table N.M | p.PAGE` mappings verbatim. They are computed deterministically and are correct — do not recompute or shift them.
+   - Otherwise, run this command yourself (substitute START and the pdf path); it prints each caption alongside the exact PDF page it sits on:
+     ```
+     pnpm exec tsx src/cli.ts figures "<pdf path>" START END
+     ```
+     Each output line is `Figure N.M | p.PAGE | caption`. **Cite these page numbers verbatim — do not convert to the book's printed page numbers.**
+   - For a numbered equation that has no figure/table caption, cite the page of the text block where it is defined (visible in the extracted text from step 2).
+
+4. **Best-effort visual pass (diagrams, matrices, equation typesetting only).** Try reading the pages with the Read tool, `pages` parameter, batches of ≤20 (e.g. `pages: "45-64"`). If the Read tool errors (the page renderer may be unavailable in this environment), continue WITHOUT it: describe each figure from its caption and the surrounding extracted text, and never invent visual detail you did not actually see.
+
+5. Synthesize the extracted text (plus any visual pass) into a unified understanding — equations, diagrams, tables, matrices, network graphs, proofs.
+
+6. Ensure the output directory exists: `mkdir -p <parent-directory-of-output-path>`
+
+7. Generate output that strictly and completely follows the provided template. Every figure/table/equation **location must be the exact PDF page found in step 3.**
+
+8. Write the output to the path given in "Write to:" using the Write tool.
+
+9. Respond with ONLY this one line: `✓ <output-filename> done (word count: NNNN)`
 
 Do not write anything else. Do not explain. Just the confirmation line.
 
@@ -77,7 +98,7 @@ Your output must be deep enough that someone who reads ONLY your output can:
 
 When **Task: lesson**, follow the lesson-note template exactly. Two non-negotiable rules:
 
-1. **Figures, tables, and equations are referenced by LOCATION, not redrawn.** For every figure/table/diagram/equation the chapter uses to make a point, record its label, its location (PDF: page number — write "around p. X" if unsure; EPUB: section/heading anchor), and one line on what to look for. The reader will open the real artifact — your job is to point precisely and say why it matters.
+1. **Figures, tables, and equations are referenced by LOCATION, not redrawn.** For every figure/table/diagram/equation the chapter uses to make a point, record its label, its location, and one line on what to look for. The reader will open the real artifact — point precisely and say why it matters. **PDF location:** the exact PDF page where the caption appears, taken from the `pdftotext` extraction in step 2 of PDF mode (e.g. `p. 39`). These numbers match the chapter's page range — do not estimate, and do not convert to the book's printed page numbers. Only write "around p. X" if a caption genuinely could not be located in the extracted text. **EPUB location:** the section/heading anchor.
 2. **Real-life applications only when genuine.** Include an `- **Application:**` line only when the chapter actually supports a concrete real-world use. If it does not, omit the line entirely. Never fabricate an application.
 
 The **Review items** section MUST use the exact pipe format from the template. Every review item line MUST begin with `- ` (a hyphen and a space) and contain exactly the four fields `id`, `concept`, `Q`, `A` separated by `|`, all on one line — the progress CLI silently ignores any line that does not start with `-`. The `concept` field MUST be the concept's NAME (matching the `### Cn — <name>` heading), NOT the `Cn` label — the tutor matches reported gaps against this name to resurface weak spots sooner.
