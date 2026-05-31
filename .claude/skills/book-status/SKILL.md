@@ -1,6 +1,6 @@
 ---
 name: book-status
-description: Show all parsed books and their summarization/practice completion status.
+description: Show all parsed books and their tutoring progress (chapters mastered, current chapter, reviews due).
 disable-model-invocation: true
 allowed-tools: Bash Read Glob
 ---
@@ -18,20 +18,18 @@ Stop.
 List all subdirectories in `book-output/`. Each is a book slug.
 
 ### 3. For each book, collect status
-- Read `book-output/<slug>/metadata.json` → title, author, chapterCount
-- Raw chapters: count `.md` files in `book-output/<slug>/raw-chapters/`
-- Summaries: count `chapter-XX-summary.md` files in `book-output/<slug>/summaries/`; check if `full-book-summary.md` exists
-- Practice: count `chapter-XX-practice.md` files in `book-output/<slug>/practice/`; check if `full-book-practice.md` exists
+- Read `book-output/<slug>/metadata.json` → title, author, chapterCount.
+- Lesson notes: count `chapter-XX-lesson.md` files in `book-output/<slug>/lessons/`.
+- Tutoring progress: run `pnpm exec tsx src/cli.ts progress show <slug>` and parse mastered/total, current chapter, reviews due. (If `progress.json` does not exist yet, this initializes it to chapter 1, 0 mastered.)
 
 ### 4. Print the status table
 
 ```
-Book              | Author           | Ch | Parsed | Summaries        | Practice
-──────────────────────────────────────────────────────────────────────────────────
-deep-work         | Cal Newport      | 18 |   ✓    | 18/18 + full ✓   | 0/18
-atomic-habits     | James Clear      | 20 |   ✓    | 20/20 + full ✓   | 20/20 + full ✓
-the-lean-startup  | Eric Ries        |  9 |   ✓    | 0/9              | 0/9
+Book              | Author        | Ch | Lessons | Mastered | Cur | Due
+────────────────────────────────────────────────────────────────────────
+influence         | Cialdini      | 12 | 12/12   | 3/12     |  4  |  5
+metamorphosis     | Kafka         |  3 |  1/3    | 1/3      |  2  |  0
 ```
 
 ### 5. Suggest next actions
-For each incomplete book, suggest the next skill to run.
+For each book: if lessons are incomplete → suggest `/tutor-prep <slug>`; else → suggest `/tutor <slug>`.
