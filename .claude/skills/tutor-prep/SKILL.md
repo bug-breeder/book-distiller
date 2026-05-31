@@ -30,13 +30,14 @@ Ensure `book-output/$0/lessons/` exists.
 
 ### 5. Create progress tasks
 For every chapter to process, call TaskCreate with subject `"[N/Total] Chapter Title"`.
+N is the chapter's 1-based position in the list of chapters being processed; Total is the count of chapters being processed (1 if `$1` was provided, the full chapter count otherwise).
 Status lifecycle: `pending` → `in_progress` (when dispatching) → `completed` (when done or skipped).
 
 ### 6. Process chapters sequentially
 For each chapter to process, in order:
 
 **a. Check for existing output.**
-Use Glob to check if `book-output/$0/lessons/<chapter-slug>-lesson.md` exists, where `<chapter-slug>` is the chapter file name with `.md` removed (e.g. `chapter-03.md` → `chapter-03-lesson.md`).
+Use Glob to check if `book-output/$0/lessons/<chapter-slug>-lesson.md` exists, where `<chapter-slug>` is the chapter file name with `.md` removed (e.g. `chapter-03.md` → `chapter-03`); the lesson note written is therefore `chapter-03-lesson.md`.
 - If it exists: mark task completed, print `[N/Total] "Title" — skipped (already done)`. Next chapter.
 - Else: continue to b.
 
