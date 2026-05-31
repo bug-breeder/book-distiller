@@ -1,6 +1,6 @@
 ---
 name: parse-book
-description: Parse a PDF or EPUB book into raw chapters. Run before summarizing.
+description: Parse a PDF or EPUB book into raw chapters. Run before /tutor-prep.
 disable-model-invocation: true
 argument-hint: <path/to/book.epub|pdf>
 allowed-tools: Bash Read
@@ -29,4 +29,4 @@ Parse the book at: $ARGUMENTS
    - Title and author
    - Number of chapters with a numbered list of their titles
    - Output location (`book-output/<slug>/`)
-   - Next step: `/summarize-book <slug>`
+   - Next step: `/tutor-prep <slug>`
