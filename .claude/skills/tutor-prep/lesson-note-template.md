@@ -14,7 +14,7 @@ Aim for 3–7 concepts. This is the lesson plan the tutor follows top to bottom.
 ### C1 — <concept name>
 - **Explanation:** 2–4 sentences, plain English, concrete. This is the tutor's opening script — no jargon dumps.
 - **Why it matters:** 1–2 sentences.
-- **Check:** one question that proves understanding (not recall). | **Ideal answer:** <answer>
+- **Check:** one question that proves understanding (not recall). — **Ideal answer:** <answer>
 - **Misconception:** the single most common wrong mental model, in one sentence.
 - **Application:** one concrete real-life use. OMIT THIS LINE ENTIRELY if the chapter offers no genuine application — never invent one.
 
@@ -30,4 +30,5 @@ If the chapter has none, write `- (none)`.
 ## Review items
 Active-recall Q/A pairs for the spaced-repetition deck. One per line, EXACTLY this pipe format so the CLI can parse it:
 `- id: c<concept#>-q<n> | concept: C<concept#> | Q: <question> | A: <answer>`
+Each line MUST begin with `- ` (a hyphen and a space) — the progress CLI only reads lines under this heading that start with `-`.
 Provide 1–2 per concept. Every `id` must be unique within this file.
