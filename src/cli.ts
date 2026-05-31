@@ -5,6 +5,8 @@ import fs from 'fs-extra';
 import slugify from 'slugify';
 import { parseBook } from './parser/index.js';
 import type { BookMetadata } from './parser/index.js';
+import { cmdDue, cmdRecord, cmdAdvance, cmdShow } from './progress/commands.js';
+import type { ChapterStatus } from './progress/types.js';
 
 const program = new Command();
 
@@ -76,6 +78,52 @@ program
       console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
     }
+  });
+
+const today = () => new Date().toISOString().slice(0, 10);
+const progressCmd = program.command('progress').description('Tutor progress & spaced-repetition state');
+
+progressCmd
+  .command('due <slug>')
+  .description('List review items due today (JSON)')
+  .action(async (slug: string) => {
+    console.log(JSON.stringify(await cmdDue(slug, today()), null, 2));
+  });
+
+progressCmd
+  .command('record <slug>')
+  .requiredOption('--id <id>', 'review item id')
+  .requiredOption('--result <result>', 'pass | fail')
+  .action(async (slug: string, opts: { id: string; result: string }) => {
+    if (opts.result !== 'pass' && opts.result !== 'fail') {
+      console.error('Error: --result must be "pass" or "fail"');
+      process.exit(1);
+    }
+    await cmdRecord(slug, opts.id, opts.result, today());
+    console.log(`✓ recorded ${opts.result} for ${opts.id}`);
+  });
+
+progressCmd
+  .command('advance <slug>')
+  .requiredOption('--chapter <n>', 'chapter number')
+  .requiredOption('--status <status>', 'not_started | in_progress | mastered')
+  .option('--gaps <gaps>', 'semicolon-separated gap notes', '')
+  .action(async (slug: string, opts: { chapter: string; status: string; gaps: string }) => {
+    const allowed = ['not_started', 'in_progress', 'mastered'];
+    if (!allowed.includes(opts.status)) {
+      console.error(`Error: --status must be one of ${allowed.join(', ')}`);
+      process.exit(1);
+    }
+    const gaps = opts.gaps ? opts.gaps.split(';').map((s) => s.trim()).filter(Boolean) : [];
+    await cmdAdvance(slug, Number(opts.chapter), opts.status as ChapterStatus, gaps, today());
+    console.log(`✓ advanced ${slug} chapter ${opts.chapter} → ${opts.status}`);
+  });
+
+progressCmd
+  .command('show <slug>')
+  .description('Human-readable progress')
+  .action(async (slug: string) => {
+    console.log(await cmdShow(slug));
   });
 
 program.parse();
