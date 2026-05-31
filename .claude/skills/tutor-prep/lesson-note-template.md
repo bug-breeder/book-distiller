@@ -29,6 +29,7 @@ If the chapter has none, write `- (none)`.
 
 ## Review items
 Active-recall Q/A pairs for the spaced-repetition deck. One per line, EXACTLY this pipe format so the CLI can parse it:
-`- id: c<concept#>-q<n> | concept: C<concept#> | Q: <question> | A: <answer>`
+`- id: c<concept#>-q<n> | concept: <concept name> | Q: <question> | A: <answer>`
 Each line MUST begin with `- ` (a hyphen and a space) — the progress CLI only reads lines under this heading that start with `-`.
+The `concept` value MUST be the concept's NAME (the same wording as in the `### Cn — <name>` heading and the Teaching arc), NOT the `Cn` label — the tutor matches your reported gaps against this name to resurface weak spots sooner.
 Provide 1–2 per concept. Every `id` must be unique within this file.

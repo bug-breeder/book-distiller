@@ -16,8 +16,8 @@ beforeEach(async () => {
   await fs.writeFile(
     path.join(lessonsDir('demo'), 'chapter-01-lesson.md'),
     `## Review items
-- id: c1-q1 | concept: C1 | Q: q1 | A: a1
-- id: c2-q1 | concept: C2 | Q: q2 | A: a2
+- id: c1-q1 | concept: Reciprocity | Q: q1 | A: a1
+- id: c2-q1 | concept: Liking | Q: q2 | A: a2
 `,
   );
 });
@@ -25,7 +25,7 @@ afterEach(async () => { await fs.remove(baseDir); });
 
 describe('cmdAdvance', () => {
   it('records mastery, logs the session, enqueues review items, bumps chapter', async () => {
-    await cmdAdvance('demo', 1, 'mastered', ['C2 was fuzzy'], '2026-01-01', baseDir);
+    await cmdAdvance('demo', 1, 'mastered', ['Liking felt fuzzy'], '2026-01-01', baseDir);
     const p = await loadProgress('demo', baseDir);
     expect(p.chapters['1'].status).toBe('mastered');
     expect(p.currentChapter).toBe(2);
