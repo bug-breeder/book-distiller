@@ -1,0 +1,33 @@
+---
+chapter: {N}
+title: "{CHAPTER TITLE}"
+source: { type: pdf, pages: "{START-END}" }   # EPUB instead: { type: epub, anchor: "{file-or-heading}" }
+---
+
+## Teaching arc
+A numbered list of the concepts to teach, in teaching order. Each line:
+`N. <concept name> — <one-line learning objective>`
+Aim for 3–7 concepts. This is the lesson plan the tutor follows top to bottom.
+
+## Concepts
+
+### C1 — <concept name>
+- **Explanation:** 2–4 sentences, plain English, concrete. This is the tutor's opening script — no jargon dumps.
+- **Why it matters:** 1–2 sentences.
+- **Check:** one question that proves understanding (not recall). | **Ideal answer:** <answer>
+- **Misconception:** the single most common wrong mental model, in one sentence.
+- **Application:** one concrete real-life use. OMIT THIS LINE ENTIRELY if the chapter offers no genuine application — never invent one.
+
+(Repeat `### C2`, `### C3`, … for every concept in the teaching arc.)
+
+## Figures / Tables / Equations
+Every figure, table, diagram, or key equation the chapter uses to make a point. One per line:
+`- **<label>** — <location> — "<what it shows / what to look for>"`
+- PDF location: a page number, e.g. `p. 97`. Write `around p. 97` if you are not certain.
+- EPUB location: a section/heading anchor, e.g. `§3.4` or the nearest heading text.
+If the chapter has none, write `- (none)`.
+
+## Review items
+Active-recall Q/A pairs for the spaced-repetition deck. One per line, EXACTLY this pipe format so the CLI can parse it:
+`- id: c<concept#>-q<n> | concept: C<concept#> | Q: <question> | A: <answer>`
+Provide 1–2 per concept. Every `id` must be unique within this file.
