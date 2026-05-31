@@ -172,7 +172,7 @@ The live session. Steps:
 6. **Feynman handoff.** Tell the user to teach "Sam." Dispatch `curious-student` with the lesson's key points + running transcript; relay one probing question at a time; loop a few rounds.
 7. **Wrap-up.** Obtain a gap report; `progress advance` to write status + gaps + enqueue reviews + bump `currentChapter`. Print the win and "next time: Ch.(N+1)." Clean stop.
 
-State is persisted after stages 2, 6, and 7 so an interruption resumes cleanly.
+Spaced-review results persist immediately (step 2, `progress record`). The chapter is finalized at wrap-up (step 7/8, `progress advance`, run before the closing message). If a session is interrupted mid-chapter, no review state is lost and re-running `/tutor` simply re-teaches that chapter — it was never marked complete.
 
 ### `curious-student` agent
 
@@ -198,7 +198,7 @@ Replace summary/practice counts with tutoring progress: per book, show chapters 
 ## Error handling & resilience
 
 - **Missing lesson note** → tutor lazily preps that one chapter before teaching.
-- **Interruption (rate limit) mid-session** → state written after each stage; re-running `/tutor` resumes. Lesson notes are skip-if-exists.
+- **Interruption (rate limit) mid-session** → spaced-review results persist immediately; the chapter is finalized only at wrap-up (`progress advance`). Re-running `/tutor` simply re-teaches the interrupted chapter — it was never marked complete. Lesson notes are skip-if-exists.
 - **`curious-student` failure** → tutor role-plays the student (fallback above).
 - **No real-life application** → explicitly skipped; never fabricated.
 - **Uncertain PDF figure page** → book-analyst writes "around p. X" rather than a false precise number.

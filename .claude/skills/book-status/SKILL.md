@@ -32,4 +32,4 @@ metamorphosis     | Kafka         |  3 |  1/3    | 1/3      |  2  |  0
 ```
 
 ### 5. Suggest next actions
-For each book: if lessons are incomplete → suggest `/tutor-prep <slug>`; else → suggest `/tutor <slug>`.
+For each book: if lessons are incomplete → suggest `/tutor-prep <slug>`; else if any chapter is not yet mastered → suggest `/tutor <slug>`; else if reviews are due → suggest `/tutor <slug>` (reviews due); else → print "Book complete ✅".
