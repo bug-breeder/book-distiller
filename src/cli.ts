@@ -114,8 +114,13 @@ progressCmd
       console.error(`Error: --status must be one of ${allowed.join(', ')}`);
       process.exit(1);
     }
+    const chapterNum = Number(opts.chapter);
+    if (!Number.isInteger(chapterNum) || chapterNum < 1) {
+      console.error('Error: --chapter must be a positive integer');
+      process.exit(1);
+    }
     const gaps = opts.gaps ? opts.gaps.split(';').map((s) => s.trim()).filter(Boolean) : [];
-    await cmdAdvance(slug, Number(opts.chapter), opts.status as ChapterStatus, gaps, today());
+    await cmdAdvance(slug, chapterNum, opts.status as ChapterStatus, gaps, today());
     console.log(`✓ advanced ${slug} chapter ${opts.chapter} → ${opts.status}`);
   });
 
@@ -126,4 +131,7 @@ progressCmd
     console.log(await cmdShow(slug));
   });
 
-program.parse();
+program.parseAsync().catch((err) => {
+  console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+  process.exit(1);
+});
