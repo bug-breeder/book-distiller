@@ -73,7 +73,7 @@ program
       console.log(`\n✓ Parsed: "${result.info.title}" by ${result.info.author}`);
       console.log(`  Chapters: ${result.chapters.length}`);
       console.log(`  Output:   ${outputDir}/`);
-      console.log(`\nNext step: /summarize-book ${slug}`);
+      console.log(`\nNext step: /tutor-prep ${slug}`);
     } catch (err) {
       console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
