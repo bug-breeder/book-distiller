@@ -117,7 +117,13 @@ diagramsCmd
   .command('render <note>')
   .description('Print each mermaid block in a lesson note as a terminal adjacency view')
   .action(async (note: string) => {
-    const md = await fs.readFile(path.resolve(note), 'utf-8');
+    const abs = path.resolve(note);
+    if (!(await fs.pathExists(abs))) {
+      console.error(`Error: file not found: ${abs}`);
+      process.exit(1);
+      return;
+    }
+    const md = await fs.readFile(abs, 'utf-8');
     const blocks = extractMermaidBlocks(md);
     if (blocks.length === 0) {
       console.log('(no mermaid diagrams)');
@@ -138,11 +144,29 @@ diagramsCmd
     if (!Number.isInteger(s) || !Number.isInteger(e) || s < 1 || e < s) {
       console.error('Error: <start> and <end> must be positive integers with start <= end');
       process.exit(1);
+      return;
     }
-    const md = await fs.readFile(path.resolve(note), 'utf-8');
-    const text = await pdfPageText(path.resolve(pdf), s, e);
+    const noteAbs = path.resolve(note);
+    const pdfAbs = path.resolve(pdf);
+    if (!(await fs.pathExists(noteAbs))) {
+      console.error(`Error: file not found: ${noteAbs}`);
+      process.exit(1);
+      return;
+    }
+    if (!(await fs.pathExists(pdfAbs))) {
+      console.error(`Error: file not found: ${pdfAbs}`);
+      process.exit(1);
+      return;
+    }
+    const md = await fs.readFile(noteAbs, 'utf-8');
+    const blocks = extractMermaidBlocks(md);
+    if (blocks.length === 0) {
+      console.log('✓ all diagram node labels are grounded in the chapter text');
+      return;
+    }
+    const text = await pdfPageText(pdfAbs, s, e);
     const offenders: string[] = [];
-    for (const block of extractMermaidBlocks(md)) {
+    for (const block of blocks) {
       const { unknown } = lintNodesAgainstText(parseMermaidGraph(block), text);
       offenders.push(...unknown);
     }
@@ -151,6 +175,7 @@ diagramsCmd
         `✗ ungrounded node labels (not found in chapter text): ${[...new Set(offenders)].join(', ')}`,
       );
       process.exit(1);
+      return;
     }
     console.log('✓ all diagram node labels are grounded in the chapter text');
   });
