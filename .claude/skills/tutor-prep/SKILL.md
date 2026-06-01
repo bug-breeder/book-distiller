@@ -85,6 +85,12 @@ Template:
 
 After the agent completes: mark the task completed. Print `[N/Total] "Title" — done`.
 
+**c. Lint inline diagrams (PDF mode only).** After the note is written, run:
+```bash
+pnpm exec tsx src/cli.ts diagrams lint "book-output/$0/lessons/<chapter-slug>-lesson.md" "<metadata.sourceFile>" <chapter.pageRange.start> <chapter.pageRange.end>
+```
+If it exits non-zero (ungrounded node labels), the analyst invented a diagram. Re-dispatch the same chapter once telling the analyst to remove the offending ` ```mermaid ` block(s) and keep only the location pointer. If it still fails, leave the pointer and drop the block manually.
+
 **After all chapters:** print `"X chapters processed, Y skipped. Re-run to resume if interrupted."`
 
 ### 7. Report completion
