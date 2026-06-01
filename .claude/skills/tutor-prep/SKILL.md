@@ -90,6 +90,12 @@ pnpm exec tsx src/cli.ts diagrams lint "book-output/$0/lessons/<chapter-slug>-le
 ```
 If it exits non-zero (ungrounded node labels, ungrounded edges, or an over-cap graph), the analyst inlined a diagram it should not have. Re-dispatch the same chapter once telling the analyst to remove the offending ` ```mermaid ` block(s) and keep only the location pointer. If it still fails, leave the pointer and drop the block manually.
 
+**d. Auto-correct figure page citations (PDF mode only).** After the note is written, run:
+```bash
+pnpm exec tsx src/cli.ts figures-fix "book-output/$0/lessons/<chapter-slug>-lesson.md" "<metadata.sourceFile>" <chapter.pageRange.start> <chapter.pageRange.end>
+```
+This deterministically rewrites any drifted figure/table page citation to the authoritative page (no re-dispatch — we know the exact page). Report what it corrected.
+
 **After all chapters:** print `"X chapters processed, Y skipped. Re-run to resume if interrupted."`
 
 ### 7. Report completion
