@@ -1,7 +1,6 @@
 ---
 name: tutor-prep
 description: Distill a parsed book's chapters into tutor lesson notes. Run before /tutor (or let /tutor lazily prep on demand).
-disable-model-invocation: true
 effort: high
 argument-hint: <book-slug> [chapter-number]
 allowed-tools: Read Write Agent Glob TaskCreate TaskUpdate
