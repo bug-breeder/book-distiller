@@ -27,6 +27,12 @@ Every figure, table, diagram, or key equation the chapter uses to make a point. 
 - EPUB location: a section/heading anchor, e.g. `§3.4` or the nearest heading text.
 If the chapter has none, write `- (none)`.
 
+**Optional inline visual (faithful only).** Immediately under an artifact's line you MAY add a grounded rendering — but ONLY when its structure/values are stated in the chapter text. The location pointer above stays either way.
+- A **small graph** the prose actually describes (≤ 8 nodes) → a fenced ` ```mermaid ` block (`A --- B` undirected, `A --> B` directed). Use the real node names when the text names them.
+- A **table / payoff matrix** whose values are in the text → a markdown table.
+- A **numbered equation** → render it inline from the text.
+Do NOT inline charts/plots, real/large networks, or photographs — point to their page only.
+
 ## Review items
 Active-recall Q/A pairs for the spaced-repetition deck. One per line, EXACTLY this pipe format so the CLI can parse it:
 `- id: c<concept#>-q<n> | concept: <concept name> | Q: <question> | A: <answer>`
