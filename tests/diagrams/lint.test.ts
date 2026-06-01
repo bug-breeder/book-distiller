@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { parseMermaidGraph } from '../../src/diagrams/parse.js';
-import { lintNodesAgainstText, exceedsNodeCap, MAX_GRAPH_NODES } from '../../src/diagrams/lint.js';
+import {
+  lintNodesAgainstText,
+  exceedsNodeCap,
+  MAX_GRAPH_NODES,
+  splitSentences,
+} from '../../src/diagrams/lint.js';
 import { extractMermaidBlocks } from '../../src/diagrams/extract.js';
 
 describe('lintNodesAgainstText', () => {
@@ -54,5 +59,17 @@ describe('exceedsNodeCap', () => {
     const g = parseMermaidGraph(lines.join('\n'));
     expect(g.nodes.length).toBe(13);
     expect(exceedsNodeCap(g)).toBe(true);
+  });
+});
+
+describe('splitSentences', () => {
+  it('keeps a sentence wrapped across newlines intact', () => {
+    expect(splitSentences('MIT is connected\nto BBN and UTAH.')).toEqual([
+      'MIT is connected to BBN and UTAH.',
+    ]);
+  });
+
+  it('splits on sentence-ending punctuation', () => {
+    expect(splitSentences('First one. Second two!')).toEqual(['First one.', 'Second two!']);
   });
 });

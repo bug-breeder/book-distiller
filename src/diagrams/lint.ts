@@ -51,3 +51,17 @@ export const MAX_GRAPH_NODES = 8;
 export function exceedsNodeCap(g: Graph): boolean {
   return g.nodes.length > MAX_GRAPH_NODES;
 }
+
+/**
+ * Split chapter text into rough sentences. `pdftotext` wraps lines mid-sentence,
+ * so collapse all whitespace (newlines, form-feeds, runs of spaces) to single
+ * spaces first, then split on sentence-ending punctuation. Heuristic — good
+ * enough for a grounding backstop.
+ */
+export function splitSentences(text: string): string[] {
+  return text
+    .replace(/\s+/g, ' ')
+    .split(/(?<=[.?!])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
