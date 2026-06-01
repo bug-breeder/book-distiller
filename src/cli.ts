@@ -11,7 +11,12 @@ import { figuresFromPdf } from './figures/extract.js';
 import { extractMermaidBlocks } from './diagrams/extract.js';
 import { parseMermaidGraph } from './diagrams/parse.js';
 import { renderAdjacency } from './diagrams/render.js';
-import { lintNodesAgainstText, exceedsNodeCap, MAX_GRAPH_NODES } from './diagrams/lint.js';
+import {
+  lintNodesAgainstText,
+  exceedsNodeCap,
+  MAX_GRAPH_NODES,
+  lintEdgesAgainstText,
+} from './diagrams/lint.js';
 import { pdfPageText } from './pdf/text.js';
 
 const program = new Command();
@@ -137,7 +142,7 @@ diagramsCmd
 
 diagramsCmd
   .command('lint <note> <pdf> <start> <end>')
-  .description('Verify each mermaid block\'s node labels appear in the chapter text and stay within the node cap')
+  .description('Verify each mermaid block\'s node labels and edges are grounded in the chapter text and within the node cap')
   .action(async (note: string, pdf: string, start: string, end: string) => {
     const s = Number(start);
     const e = Number(end);
@@ -161,16 +166,18 @@ diagramsCmd
     const md = await fs.readFile(noteAbs, 'utf-8');
     const blocks = extractMermaidBlocks(md);
     if (blocks.length === 0) {
-      console.log('✓ all diagram node labels are grounded in the chapter text');
+      console.log('✓ all diagram node labels and edges are grounded in the chapter text');
       return;
     }
     const text = await pdfPageText(pdfAbs, s, e);
     const offenders: string[] = [];
     const oversized: number[] = [];
+    const ungroundedEdges: string[] = [];
     for (const block of blocks) {
       const graph = parseMermaidGraph(block);
       if (exceedsNodeCap(graph)) oversized.push(graph.nodes.length);
       offenders.push(...lintNodesAgainstText(graph, text).unknown);
+      ungroundedEdges.push(...lintEdgesAgainstText(graph, text).ungrounded);
     }
     let failed = false;
     if (oversized.length > 0) {
@@ -185,11 +192,17 @@ diagramsCmd
       );
       failed = true;
     }
+    if (ungroundedEdges.length > 0) {
+      console.error(
+        `✗ ungrounded edges (not stated in chapter prose): ${[...new Set(ungroundedEdges)].join(', ')}`,
+      );
+      failed = true;
+    }
     if (failed) {
       process.exit(1);
       return;
     }
-    console.log('✓ all diagram node labels are grounded in the chapter text');
+    console.log('✓ all diagram node labels and edges are grounded in the chapter text');
   });
 
 const today = () => new Date().toISOString().slice(0, 10);
