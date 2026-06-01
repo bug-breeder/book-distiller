@@ -65,3 +65,37 @@ export function splitSentences(text: string): string[] {
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
 }
+
+export interface EdgeLintResult {
+  ok: boolean;
+  ungrounded: string[];
+}
+
+// Connection cues that signal an asserted edge. Excludes bare "between"
+// ("the distance between A and B" is not an edge); "an edge between …" still
+// fires via "edge".
+const CONNECTION_CUE_RE =
+  /\b(connect(?:s|ed|ion|ions)?|join(?:s|ed|ing)?|edges?|link(?:s|ed|ing)?|adjacent|neighbou?rs?|ties?|tied|attached)\b/i;
+
+/**
+ * Deterministic edge backstop: a graph edge whose BOTH endpoints are verifiable
+ * (named, multi-char) must be asserted by the prose — some sentence must contain
+ * both endpoint labels (word-boundary) AND a connection cue. Edges touching a
+ * single-letter node are unverifiable and skipped. Edges store node ids, so each
+ * id is resolved to its node label first.
+ */
+export function lintEdgesAgainstText(g: Graph, chapterText: string): EdgeLintResult {
+  const labelOf = (id: string): string => g.nodes.find((n) => n.id === id)?.label ?? id;
+  const sentences = splitSentences(chapterText);
+  const ungrounded: string[] = [];
+  for (const e of g.edges) {
+    const from = labelOf(e.from).trim();
+    const to = labelOf(e.to).trim();
+    if (!isVerifiableLabel(from) || !isVerifiableLabel(to)) continue;
+    const grounded = sentences.some(
+      (s) => textHasTerm(s, from) && textHasTerm(s, to) && CONNECTION_CUE_RE.test(s),
+    );
+    if (!grounded) ungrounded.push(`${from}—${to}`);
+  }
+  return { ok: ungrounded.length === 0, ungrounded: [...new Set(ungrounded)] };
+}

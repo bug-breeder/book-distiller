@@ -5,6 +5,7 @@ import {
   exceedsNodeCap,
   MAX_GRAPH_NODES,
   splitSentences,
+  lintEdgesAgainstText,
 } from '../../src/diagrams/lint.js';
 import { extractMermaidBlocks } from '../../src/diagrams/extract.js';
 
@@ -71,5 +72,33 @@ describe('splitSentences', () => {
 
   it('splits on sentence-ending punctuation', () => {
     expect(splitSentences('First one. Second two!')).toEqual(['First one.', 'Second two!']);
+  });
+});
+
+describe('lintEdgesAgainstText', () => {
+  it('grounds named edges asserted in one sentence with a connection cue', () => {
+    const g = parseMermaidGraph('graph LR\n MIT --- BBN\n MIT --- UTAH');
+    const text = 'In the network, MIT is connected to BBN and UTAH.';
+    expect(lintEdgesAgainstText(g, text)).toEqual({ ok: true, ungrounded: [] });
+  });
+
+  it('flags an edge whose endpoints co-occur without a connection cue', () => {
+    const g = parseMermaidGraph('graph LR\n MIT --- STAN');
+    const text = 'The distance from MIT to STAN is two.';
+    expect(lintEdgesAgainstText(g, text)).toEqual({ ok: false, ungrounded: ['MIT—STAN'] });
+  });
+
+  it('uses word boundaries: a substring endpoint does not ground an edge', () => {
+    const g = parseMermaidGraph('graph LR\n MIT --- BBN');
+    const text = 'students were admitted and the bbn link connected them';
+    expect(lintEdgesAgainstText(g, text)).toEqual({ ok: false, ungrounded: ['MIT—BBN'] });
+  });
+
+  it('skips edges touching a single-letter (unverifiable) node', () => {
+    const g = parseMermaidGraph('graph LR\n A --- B\n B --- C');
+    expect(lintEdgesAgainstText(g, 'completely unrelated prose')).toEqual({
+      ok: true,
+      ungrounded: [],
+    });
   });
 });
