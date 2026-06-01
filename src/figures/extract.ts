@@ -1,8 +1,5 @@
 // src/figures/extract.ts
-import { execFile } from 'child_process';
-import { promisify } from 'util';
-
-const execFileAsync = promisify(execFile);
+import { pdfPageText } from '../pdf/text.js';
 
 export interface FigureLoc {
   /** e.g. "Figure 2.1" or "Table 3.2" */
@@ -51,21 +48,6 @@ export async function figuresFromPdf(
   startPage: number,
   endPage: number,
 ): Promise<FigureLoc[]> {
-  let stdout: string;
-  try {
-    ({ stdout } = await execFileAsync(
-      'pdftotext',
-      ['-f', String(startPage), '-l', String(endPage), '-layout', pdfPath, '-'],
-      { maxBuffer: 64 * 1024 * 1024 },
-    ));
-  } catch (err) {
-    const e = err as NodeJS.ErrnoException;
-    if (e.code === 'ENOENT') {
-      throw new Error(
-        'pdftotext not found — install poppler (e.g. `brew install poppler`) to locate figures.',
-      );
-    }
-    throw new Error(`pdftotext failed: ${e.message}`);
-  }
-  return parseFigures(stdout, startPage);
+  const text = await pdfPageText(pdfPath, startPage, endPage);
+  return parseFigures(text, startPage);
 }
