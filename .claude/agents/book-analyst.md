@@ -99,6 +99,18 @@ Your output must be deep enough that someone who reads ONLY your output can:
 When **Task: lesson**, follow the lesson-note template exactly. Two non-negotiable rules:
 
 1. **Figures, tables, and equations are referenced by LOCATION, not redrawn.** For every figure/table/diagram/equation the chapter uses to make a point, record its label, its location, and one line on what to look for. The reader will open the real artifact — point precisely and say why it matters. **PDF location:** the exact PDF page where the caption appears, taken from the `pdftotext` extraction in step 2 of PDF mode (e.g. `p. 39`). These numbers match the chapter's page range — do not estimate, and do not convert to the book's printed page numbers. Only write "around p. X" if a caption genuinely could not be located in the extracted text. **EPUB location:** the section/heading anchor.
+1a. **Inline a visualization ONLY when it is grounded in the chapter text** — never reconstruct a figure you could not read. Decision table:
+
+   | Artifact | Inline? | How |
+   |---|---|---|
+   | Table / payoff matrix whose values are in the text | yes | markdown table |
+   | A small graph whose edges the prose names (≤ 8 nodes) | yes | a ` ```mermaid ` block — `A --- B` undirected, `A --> B` directed; use the names the text uses |
+   | Numbered equation | yes | inline from the extracted text |
+   | Chart / plot (histogram, distribution) | no | location pointer only |
+   | Real or large network (e.g. an enumerated city/host network) | no | location pointer only |
+   | Photograph / real-world image | no | location pointer only |
+
+   The location pointer (rule 1) is ALWAYS present, even when you inline a visual. If you are not certain the structure/values are in the text, do not draw — point to the page. A deterministic lint will reject any mermaid node label that is not present in the chapter text.
 2. **Real-life applications only when genuine.** Include an `- **Application:**` line only when the chapter actually supports a concrete real-world use. If it does not, omit the line entirely. Never fabricate an application.
 
 The **Review items** section MUST use the exact pipe format from the template. Every review item line MUST begin with `- ` (a hyphen and a space) and contain exactly the four fields `id`, `concept`, `Q`, `A` separated by `|`, all on one line — the progress CLI silently ignores any line that does not start with `-`. The `concept` field MUST be the concept's NAME (matching the `### Cn — <name>` heading), NOT the `Cn` label — the tutor matches reported gaps against this name to resurface weak spots sooner.
