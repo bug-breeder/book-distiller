@@ -34,6 +34,14 @@ describe('correctFigurePages', () => {
     expect(r.normalized).toEqual(['Table 3.1']);
   });
 
+  it('treats a hedged-AND-wrong page as a fix (records it, de-hedges, corrects the page)', () => {
+    const note = '- **Figure 2.2** — around p. 97 — "wrong and hedged"';
+    const r = correctFigurePages(note, figs);
+    expect(r.text).toBe('- **Figure 2.2** — p. 39 — "wrong and hedged"');
+    expect(r.fixes).toEqual([{ label: 'Figure 2.2', from: 97, to: 39 }]);
+    expect(r.normalized).toEqual([]);
+  });
+
   it('leaves a label not in the extraction untouched and reports it unverified', () => {
     const note = '- **Figure 9.9** — p. 99 — "nonexistent"';
     const r = correctFigurePages(note, figs);
