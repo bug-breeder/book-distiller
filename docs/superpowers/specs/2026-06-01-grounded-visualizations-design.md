@@ -42,10 +42,12 @@ Inline a visualization **only** when its structure/values are explicit in the ex
 
 **Guards for the gated graph case:**
 1. **Grounding (primary):** draw only when the prose states the connections, and only for **abstract illustrative examples** (the policy already forbids real/named networks — those are a non-goal). Cite the source page.
-2. **Size cap:** ≤ 8 nodes (illustrative examples only).
+2. **Size cap:** ≤ 8 nodes (illustrative examples only). **Enforced deterministically** in the lint gate (`exceedsNodeCap`, `MAX_GRAPH_NODES = 8`): a `mermaid` block with more than 8 nodes fails the lint and is dropped to a location pointer. E2E testing motivated this — the analyst inlined a 13-node real network (the Arpanet) that the node-label lint passed (its labels *are* in the text); node count is a cheap, deterministic proxy for "real/large enumerated network" vs. "small abstract example." See *Stopgap, not the final answer* below.
 3. **Grounding-lint (deterministic backstop, partial):** every *meaningful* node label in the `mermaid` block must appear in the extracted chapter text. A label that doesn't → the diagram is dropped and the location pointer kept.
 
-**Honest limit of the lint:** it has teeth only for *named* labels (e.g. `Reciprocity`, `MIT`). Single-letter abstract node IDs (`A`,`B`,`C`) occur all over the text, so the lint cannot verify them — for abstract example graphs the guarantee is the *policy* (prose-stated, ≤8 nodes, cited, never a real network), not the lint. Edges always rest on the agent's transcription (there is no deterministic ground truth for them). When in doubt, the agent points to the page instead of drawing. This is why the high-confidence win is **tables/matrices** (values are concrete and checkable), with small graphs a smaller, more-caveated addition.
+**Honest limit of the lint:** it has teeth for *named* labels (e.g. `Reciprocity`, `MIT`) and now for *node count* (≤8, deterministic). Single-letter abstract node IDs (`A`,`B`,`C`) occur all over the text, so the label lint cannot verify them — for abstract example graphs the guarantee is the node cap plus the *policy* (prose-stated, ≤8 nodes, cited, never a real network). **Edges always rest on the agent's transcription** (there is no deterministic ground truth for them). When in doubt, the agent points to the page instead of drawing. This is why the high-confidence win is **tables/matrices** (values are concrete and checkable), with small graphs a smaller, more-caveated addition.
+
+**Stopgap, not the final answer.** The ≤8-node cap is a *proxy*, not a real guarantee: it would wrongly reject a legitimately-abstract 13-node example (e.g. a connected-components illustration), and it does not verify the edges of the graphs it *accepts*. The chosen real fix is **edge-grounding** — verifying each edge against the prose so size stops being the proxy — which gets its own spec/plan (see Future work). Until that lands, the cap is the conservative default: prefer a page pointer over an unverifiable inline graph.
 
 ## Architecture
 
@@ -69,6 +71,8 @@ Pure, unit-testable functions plus thin CLI wrappers:
   `Nodes: A B C D` / `Edges: B–A, B–C, B–D (undirected)`.
 - `lintNodesAgainstText(graph, chapterText): { ok: boolean; unknown: string[] }`
   Each **meaningful** node label (length ≥ 2, not a bare single letter/number) must occur in `chapterText` (from `pdftotext`). Single-letter abstract IDs are exempt by design (unverifiable; see "Honest limit of the lint"). Best-effort: the same check is applied to markdown-table cell values that are alphabetic terms.
+- `exceedsNodeCap(graph): boolean` (with `MAX_GRAPH_NODES = 8`)
+  Deterministic size guard: a graph with more than 8 nodes fails the lint gate and is dropped to a location pointer. Distinguishes small abstract illustrative examples (edges usually prose-stated) from real/large enumerated networks (edges only in the unreadable image).
 
 ### New CLI subcommands (in `src/cli.ts`)
 
@@ -115,5 +119,5 @@ PDF → `pdftotext` → analyst writes note (grounded inline visuals + always a 
 
 ## Future work
 
+- **Edge-grounding (chosen next step — its own spec/plan).** Verify each edge against the prose (e.g. parse "A is connected to B and C") so that the *edges* — the one remaining untrusted point, and the reason for the ≤8-node cap — become deterministically checkable. Once edges are grounded, the size cap can be relaxed or removed: any graph whose edges are text-stated is safe to inline, regardless of node count.
 - A verified terminal ASCII-art renderer (e.g., the Go `mermaid-ascii`) as a pure enhancement, if undirected support is confirmed.
-- Optional edge-grounding heuristics (parse "A connected to B, C" prose) to harden the one remaining trust point.

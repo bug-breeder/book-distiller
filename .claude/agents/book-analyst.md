@@ -110,7 +110,7 @@ When **Task: lesson**, follow the lesson-note template exactly. Two non-negotiab
    | Real or large network (e.g. an enumerated city/host network) | no | location pointer only |
    | Photograph / real-world image | no | location pointer only |
 
-   The location pointer (rule 1) is ALWAYS present, even when you inline a visual. If you are not certain the structure/values are in the text, do not draw — point to the page. A deterministic lint will reject any mermaid node label that is not present in the chapter text.
+   The location pointer (rule 1) is ALWAYS present, even when you inline a visual. If you are not certain the structure/values are in the text, do not draw — point to the page. A deterministic lint will reject any mermaid node label that is not present in the chapter text, **and will reject any graph with more than 8 nodes** — a graph that big is a real/large enumerated network whose edges are not in the prose, so point to the page instead of drawing it.
 2. **Real-life applications only when genuine.** Include an `- **Application:**` line only when the chapter actually supports a concrete real-world use. If it does not, omit the line entirely. Never fabricate an application.
 
 The **Review items** section MUST use the exact pipe format from the template. Every review item line MUST begin with `- ` (a hyphen and a space) and contain exactly the four fields `id`, `concept`, `Q`, `A` separated by `|`, all on one line — the progress CLI silently ignores any line that does not start with `-`. The `concept` field MUST be the concept's NAME (matching the `### Cn — <name>` heading), NOT the `Cn` label — the tutor matches reported gaps against this name to resurface weak spots sooner.

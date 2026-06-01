@@ -678,3 +678,15 @@ git commit -m "feat(tutor): lint inline diagrams in prep, render adjacency while
 **2. Placeholder scan:** No TBD/TODO; every code step shows full code; every command has expected output. ✓
 
 **3. Type consistency:** `Graph`/`GraphNode`/`GraphEdge` defined in Task 1 and imported by Tasks 2-3 & 5. `parseMermaidGraph`, `renderAdjacency`, `lintNodesAgainstText`, `extractMermaidBlocks`, `pdfPageText` names are identical across tasks, tests, and CLI. `LintResult.unknown`/`ok` match the lint tests. ✓
+
+---
+
+## Post-plan hardening (from E2E)
+
+The plan's final manual E2E (re-dispatch `book-analyst` on Ch.2) surfaced that the analyst inlined a 13-node real network (the Arpanet, Fig 2.3) which the node-label lint passed (its labels *are* in the chapter text). The size cap — listed as a guard in the spec but originally left to the authoring policy — was added to the deterministic lint gate:
+
+- `src/diagrams/lint.ts`: `export const MAX_GRAPH_NODES = 8` + `exceedsNodeCap(g): boolean`; 2 unit tests in `tests/diagrams/lint.test.ts` (63 tests total).
+- `src/cli.ts` `diagrams lint`: oversized blocks fail the gate with `✗ ... exceed the 8-node cap ...` (exit 1).
+- `book-analyst.md`: policy notes the lint rejects >8-node graphs.
+
+The cap is a **conservative stopgap**: a proxy for "real/large enumerated network (edges only in the image)." The chosen real fix is **edge-grounding** (verify each edge against the prose), which gets its own spec/plan; once edges are grounded the cap can be relaxed. See the design spec's *Stopgap, not the final answer* and *Future work*.
