@@ -11,7 +11,7 @@ import { figuresFromPdf } from './figures/extract.js';
 import { extractMermaidBlocks } from './diagrams/extract.js';
 import { parseMermaidGraph } from './diagrams/parse.js';
 import { renderAdjacency } from './diagrams/render.js';
-import { lintNodesAgainstText } from './diagrams/lint.js';
+import { lintNodesAgainstText, exceedsNodeCap, MAX_GRAPH_NODES } from './diagrams/lint.js';
 import { pdfPageText } from './pdf/text.js';
 
 const program = new Command();
@@ -137,7 +137,7 @@ diagramsCmd
 
 diagramsCmd
   .command('lint <note> <pdf> <start> <end>')
-  .description('Verify each mermaid block\'s node labels appear in the chapter text')
+  .description('Verify each mermaid block\'s node labels appear in the chapter text and stay within the node cap')
   .action(async (note: string, pdf: string, start: string, end: string) => {
     const s = Number(start);
     const e = Number(end);
@@ -166,14 +166,26 @@ diagramsCmd
     }
     const text = await pdfPageText(pdfAbs, s, e);
     const offenders: string[] = [];
+    const oversized: number[] = [];
     for (const block of blocks) {
-      const { unknown } = lintNodesAgainstText(parseMermaidGraph(block), text);
-      offenders.push(...unknown);
+      const graph = parseMermaidGraph(block);
+      if (exceedsNodeCap(graph)) oversized.push(graph.nodes.length);
+      offenders.push(...lintNodesAgainstText(graph, text).unknown);
+    }
+    let failed = false;
+    if (oversized.length > 0) {
+      console.error(
+        `✗ ${oversized.length} diagram(s) exceed the ${MAX_GRAPH_NODES}-node cap (sizes: ${oversized.join(', ')}) — a real/large network must be a location pointer, not an inline graph`,
+      );
+      failed = true;
     }
     if (offenders.length > 0) {
       console.error(
         `✗ ungrounded node labels (not found in chapter text): ${[...new Set(offenders)].join(', ')}`,
       );
+      failed = true;
+    }
+    if (failed) {
       process.exit(1);
       return;
     }

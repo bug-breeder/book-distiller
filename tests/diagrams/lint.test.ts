@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseMermaidGraph } from '../../src/diagrams/parse.js';
-import { lintNodesAgainstText } from '../../src/diagrams/lint.js';
+import { lintNodesAgainstText, exceedsNodeCap, MAX_GRAPH_NODES } from '../../src/diagrams/lint.js';
 import { extractMermaidBlocks } from '../../src/diagrams/extract.js';
 
 describe('lintNodesAgainstText', () => {
@@ -32,5 +32,21 @@ describe('extractMermaidBlocks', () => {
 
   it('returns [] when there are no mermaid blocks', () => {
     expect(extractMermaidBlocks('# title\n```js\ncode\n```')).toEqual([]);
+  });
+});
+
+describe('exceedsNodeCap', () => {
+  it('passes a small illustrative graph (<= cap)', () => {
+    const g = parseMermaidGraph('graph LR\n A --- B\n B --- C\n C --- D');
+    expect(g.nodes.length).toBeLessThanOrEqual(MAX_GRAPH_NODES);
+    expect(exceedsNodeCap(g)).toBe(false);
+  });
+
+  it('flags a graph that exceeds the node cap (e.g. a 13-node real network)', () => {
+    const lines = ['graph LR'];
+    for (let i = 0; i < 12; i++) lines.push(`N${i} --- N${i + 1}`);
+    const g = parseMermaidGraph(lines.join('\n'));
+    expect(g.nodes.length).toBe(13);
+    expect(exceedsNodeCap(g)).toBe(true);
   });
 });

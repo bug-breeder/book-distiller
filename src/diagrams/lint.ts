@@ -22,3 +22,16 @@ export function lintNodesAgainstText(g: Graph, chapterText: string): LintResult 
   }
   return { ok: unknown.length === 0, unknown: [...new Set(unknown)] };
 }
+
+/**
+ * The faithfulness policy caps a grounded illustrative graph at 8 nodes. Larger
+ * graphs are real/enumerated networks whose edges cannot be transcribed from
+ * prose — they must remain a location pointer, not an inline diagram. This is the
+ * deterministic half of the size guard (node-label grounding is the other half).
+ */
+export const MAX_GRAPH_NODES = 8;
+
+/** True when a graph has more nodes than the illustrative-graph cap allows. */
+export function exceedsNodeCap(g: Graph): boolean {
+  return g.nodes.length > MAX_GRAPH_NODES;
+}
