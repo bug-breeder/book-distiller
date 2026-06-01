@@ -101,4 +101,10 @@ describe('lintEdgesAgainstText', () => {
       ungrounded: [],
     });
   });
+
+  it('recognizes the "connecting" cue form', () => {
+    const g = parseMermaidGraph('graph LR\n MIT --- BBN');
+    const text = 'In the diagram, MIT is connecting to BBN.';
+    expect(lintEdgesAgainstText(g, text)).toEqual({ ok: true, ungrounded: [] });
+  });
 });

@@ -75,7 +75,7 @@ export interface EdgeLintResult {
 // ("the distance between A and B" is not an edge); "an edge between …" still
 // fires via "edge".
 const CONNECTION_CUE_RE =
-  /\b(connect(?:s|ed|ion|ions)?|join(?:s|ed|ing)?|edges?|link(?:s|ed|ing)?|adjacent|neighbou?rs?|ties?|tied|attached)\b/i;
+  /\b(connect(?:s|ed|ing|ion|ions)?|join(?:s|ed|ing)?|edges?|link(?:s|ed|ing)?|adjacent|neighbou?rs?|ties?|tied|attached)\b/i;
 
 /**
  * Deterministic edge backstop: a graph edge whose BOTH endpoints are verifiable
