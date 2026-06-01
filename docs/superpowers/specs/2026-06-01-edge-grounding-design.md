@@ -73,9 +73,9 @@ book-analyst skill: "draw only edges the text asserts"  (generation half)
 
 ### Changed in `src/cli.ts` — `diagrams lint`
 
-The action already collects node-label offenders and oversized blocks per `mermaid` block; it gains a third collector for ungrounded edges. After the loop, it prints up to three independent `✗` lines and exits 1 if any fired:
-- `✗ ungrounded node labels (not found in chapter text): …`
+The action already collects node-label offenders and oversized blocks per `mermaid` block; it gains a third collector for ungrounded edges. After the loop, it prints up to three independent `✗` lines (in this order — biggest structural failure first) and exits 1 if any fired:
 - `✗ N diagram(s) exceed the 8-node cap …`
+- `✗ ungrounded node labels (not found in chapter text): …`
 - `✗ ungrounded edges (not stated in chapter prose): MIT—UTAH, …`
 
 Command description updated to mention edges. The PDF text is fetched once (after the no-blocks short-circuit) and reused for both node-lint and edge-lint.
