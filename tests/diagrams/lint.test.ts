@@ -22,6 +22,12 @@ describe('lintNodesAgainstText', () => {
       unknown: [],
     });
   });
+
+  it('uses word boundaries: a substring match does not count as grounded', () => {
+    const g = parseMermaidGraph('graph LR\n MIT --- BBN');
+    const text = 'many students were admitted; the BBN router connected them';
+    expect(lintNodesAgainstText(g, text)).toEqual({ ok: false, unknown: ['MIT'] });
+  });
 });
 
 describe('extractMermaidBlocks', () => {
