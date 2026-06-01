@@ -8,6 +8,7 @@ import type { BookMetadata } from './parser/index.js';
 import { cmdDue, cmdRecord, cmdAdvance, cmdShow } from './progress/commands.js';
 import type { ChapterStatus } from './progress/types.js';
 import { figuresFromPdf } from './figures/extract.js';
+import { correctFigurePages } from './figures/fix.js';
 import { extractMermaidBlocks } from './diagrams/extract.js';
 import { parseMermaidGraph } from './diagrams/parse.js';
 import { renderAdjacency } from './diagrams/render.js';
@@ -112,6 +113,46 @@ program
       return;
     }
     for (const f of figs) console.log(`${f.label} | p.${f.page} | ${f.caption}`);
+  });
+
+program
+  .command('figures-fix <note> <pdf> <start> <end>')
+  .description("Rewrite a lesson note's figure/table page citations to match the authoritative extraction")
+  .action(async (note: string, pdf: string, start: string, end: string) => {
+    const s = Number(start);
+    const e = Number(end);
+    if (!Number.isInteger(s) || !Number.isInteger(e) || s < 1 || e < s) {
+      console.error('Error: <start> and <end> must be positive integers with start <= end');
+      process.exit(1);
+      return;
+    }
+    const noteAbs = path.resolve(note);
+    const pdfAbs = path.resolve(pdf);
+    if (!(await fs.pathExists(noteAbs))) {
+      console.error(`Error: file not found: ${noteAbs}`);
+      process.exit(1);
+      return;
+    }
+    if (!(await fs.pathExists(pdfAbs))) {
+      console.error(`Error: file not found: ${pdfAbs}`);
+      process.exit(1);
+      return;
+    }
+    const md = await fs.readFile(noteAbs, 'utf-8');
+    const figs = await figuresFromPdf(pdfAbs, s, e);
+    const { text, fixes, normalized, unverified } = correctFigurePages(md, figs);
+    if (text !== md) await fs.writeFile(noteAbs, text);
+    if (fixes.length === 0 && normalized.length === 0) {
+      console.log(`✓ all figure/table page citations already correct (${figs.length} known)`);
+      return;
+    }
+    const fixStr = fixes.map((f) => `${f.label} p.${f.from}→p.${f.to}`).join(', ');
+    console.log(
+      `✓ figures-fix: ${fixes.length} page(s) corrected` +
+        (fixStr ? ` (${fixStr})` : '') +
+        (normalized.length ? `; ${normalized.length} hedge(s) normalized` : '') +
+        (unverified.length ? `; ${unverified.length} unverified (${unverified.join(', ')})` : ''),
+    );
   });
 
 const diagramsCmd = program
