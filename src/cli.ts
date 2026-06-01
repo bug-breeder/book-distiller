@@ -8,6 +8,11 @@ import type { BookMetadata } from './parser/index.js';
 import { cmdDue, cmdRecord, cmdAdvance, cmdShow } from './progress/commands.js';
 import type { ChapterStatus } from './progress/types.js';
 import { figuresFromPdf } from './figures/extract.js';
+import { extractMermaidBlocks } from './diagrams/extract.js';
+import { parseMermaidGraph } from './diagrams/parse.js';
+import { renderAdjacency } from './diagrams/render.js';
+import { lintNodesAgainstText } from './diagrams/lint.js';
+import { pdfPageText } from './pdf/text.js';
 
 const program = new Command();
 
@@ -102,6 +107,52 @@ program
       return;
     }
     for (const f of figs) console.log(`${f.label} | p.${f.page} | ${f.caption}`);
+  });
+
+const diagramsCmd = program
+  .command('diagrams')
+  .description('Render or lint grounded diagrams embedded in a lesson note');
+
+diagramsCmd
+  .command('render <note>')
+  .description('Print each mermaid block in a lesson note as a terminal adjacency view')
+  .action(async (note: string) => {
+    const md = await fs.readFile(path.resolve(note), 'utf-8');
+    const blocks = extractMermaidBlocks(md);
+    if (blocks.length === 0) {
+      console.log('(no mermaid diagrams)');
+      return;
+    }
+    blocks.forEach((block, i) => {
+      if (i > 0) console.log('');
+      console.log(renderAdjacency(parseMermaidGraph(block)));
+    });
+  });
+
+diagramsCmd
+  .command('lint <note> <pdf> <start> <end>')
+  .description('Verify each mermaid block\'s node labels appear in the chapter text')
+  .action(async (note: string, pdf: string, start: string, end: string) => {
+    const s = Number(start);
+    const e = Number(end);
+    if (!Number.isInteger(s) || !Number.isInteger(e) || s < 1 || e < s) {
+      console.error('Error: <start> and <end> must be positive integers with start <= end');
+      process.exit(1);
+    }
+    const md = await fs.readFile(path.resolve(note), 'utf-8');
+    const text = await pdfPageText(path.resolve(pdf), s, e);
+    const offenders: string[] = [];
+    for (const block of extractMermaidBlocks(md)) {
+      const { unknown } = lintNodesAgainstText(parseMermaidGraph(block), text);
+      offenders.push(...unknown);
+    }
+    if (offenders.length > 0) {
+      console.error(
+        `✗ ungrounded node labels (not found in chapter text): ${[...new Set(offenders)].join(', ')}`,
+      );
+      process.exit(1);
+    }
+    console.log('✓ all diagram node labels are grounded in the chapter text');
   });
 
 const today = () => new Date().toISOString().slice(0, 10);
