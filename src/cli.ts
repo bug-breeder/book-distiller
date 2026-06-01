@@ -141,18 +141,19 @@ program
     const md = await fs.readFile(noteAbs, 'utf-8');
     const figs = await figuresFromPdf(pdfAbs, s, e);
     const { text, fixes, normalized, unverified } = correctFigurePages(md, figs);
-    if (text !== md) await fs.writeFile(noteAbs, text);
-    if (fixes.length === 0 && normalized.length === 0) {
-      console.log(`✓ all figure/table page citations already correct (${figs.length} known)`);
-      return;
+    if (text !== md) await fs.writeFile(noteAbs, text, 'utf-8');
+    const parts: string[] = [];
+    if (fixes.length > 0) {
+      const fixStr = fixes.map((f) => `${f.label} p.${f.from}→p.${f.to}`).join(', ');
+      parts.push(`${fixes.length} page(s) corrected (${fixStr})`);
     }
-    const fixStr = fixes.map((f) => `${f.label} p.${f.from}→p.${f.to}`).join(', ');
-    console.log(
-      `✓ figures-fix: ${fixes.length} page(s) corrected` +
-        (fixStr ? ` (${fixStr})` : '') +
-        (normalized.length ? `; ${normalized.length} hedge(s) normalized` : '') +
-        (unverified.length ? `; ${unverified.length} unverified (${unverified.join(', ')})` : ''),
-    );
+    if (normalized.length > 0) parts.push(`${normalized.length} hedge(s) normalized`);
+    if (unverified.length > 0) parts.push(`${unverified.length} unverified (${unverified.join(', ')})`);
+    if (parts.length === 0) {
+      console.log(`✓ all figure/table page citations already correct (${figs.length} known)`);
+    } else {
+      console.log(`✓ figures-fix: ${parts.join('; ')}`);
+    }
   });
 
 const diagramsCmd = program
