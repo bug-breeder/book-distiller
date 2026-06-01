@@ -23,7 +23,7 @@ import { pdfPageText } from './pdf/text.js';
 const program = new Command();
 
 program
-  .name('book-distiller')
+  .name('study-mate')
   .description('Parse PDF and EPUB books into structured chapters for Claude Code analysis');
 
 program

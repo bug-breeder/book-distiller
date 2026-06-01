@@ -1,4 +1,4 @@
-# Book Distiller
+# Study Mate
 
 Parse PDF/EPUB books and learn them with a live AI tutor using Claude Code skills.
 
