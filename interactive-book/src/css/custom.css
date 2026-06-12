@@ -1,0 +1,419 @@
+/**
+ * Global styles. Infima (Docusaurus' CSS framework) provides the base; below we
+ * set a study-friendly palette and style the interactive widgets, callouts,
+ * comprehension checks, and flashcards.
+ */
+
+:root {
+  --ifm-color-primary: #3056d3;
+  --ifm-color-primary-dark: #2b4dbe;
+  --ifm-color-primary-darker: #2949b4;
+  --ifm-color-primary-darkest: #223c94;
+  --ifm-color-primary-light: #4866d8;
+  --ifm-color-primary-lighter: #5571da;
+  --ifm-color-primary-lightest: #7a90e3;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* Visualization palette */
+  --viz-bg: #ffffff;
+  --viz-body-bg: #ffffff;
+  --viz-border: #d8dee4;
+  --viz-edge: #b6bec9;
+  --viz-node-stroke: #ffffff;
+  --viz-node-label: #ffffff;
+  --viz-head-bg: #f6f8fa;
+  --viz-note: #57606a;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #6b8afd;
+  --ifm-color-primary-dark: #4f73fc;
+  --ifm-color-primary-darker: #4166fb;
+  --ifm-color-primary-darkest: #1b46f8;
+  --ifm-color-primary-light: #87a1fe;
+  --ifm-color-primary-lighter: #95acfe;
+  --ifm-color-primary-lightest: #bccbff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  --viz-bg: #161b22;
+  --viz-body-bg: #161b22;
+  --viz-border: #30363d;
+  --viz-edge: #4d5662;
+  --viz-node-stroke: #0d1117;
+  --viz-node-label: #e6edf3;
+  --viz-head-bg: #1c2128;
+  --viz-note: #8b949e;
+}
+
+/* ───────────────────────── Visualization frame ───────────────────────── */
+.viz {
+  margin: 1.6rem 0;
+  border: 1px solid var(--viz-border);
+  border-radius: 10px;
+  background: var(--viz-bg);
+  overflow: hidden;
+}
+.viz__head {
+  padding: 0.7rem 1rem;
+  background: var(--viz-head-bg);
+  border-bottom: 1px solid var(--viz-border);
+}
+.viz__title {
+  display: block;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+.viz__caption {
+  display: block;
+  font-size: 0.84rem;
+  color: var(--viz-note);
+  margin-top: 0.15rem;
+}
+.viz__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--viz-border);
+}
+.viz__control {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.82rem;
+  gap: 0.25rem;
+  flex: 1 1 220px;
+}
+.viz__control input[type='range'] {
+  width: 100%;
+  accent-color: var(--ifm-color-primary);
+}
+.viz__btns {
+  display: flex;
+  gap: 0.4rem;
+}
+.viz__btn {
+  border: 1px solid var(--viz-border);
+  background: var(--viz-bg);
+  color: var(--ifm-font-color-base);
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.viz__btn:hover:not(:disabled) {
+  border-color: var(--ifm-color-primary);
+}
+.viz__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.viz__btn--primary {
+  background: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+  color: #fff;
+}
+.viz__body {
+  padding: 1rem;
+}
+.viz__canvas-wrap {
+  width: 100%;
+}
+.viz__canvas-wrap svg,
+.viz__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.balance-svg {
+  max-width: 480px;
+  margin: 0 auto;
+}
+.viz__figure {
+  display: flex;
+  justify-content: center;
+}
+.viz__figure svg {
+  width: 100%;
+  max-width: 760px;
+}
+.viz__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0 1rem 0.9rem;
+  font-size: 0.78rem;
+  color: var(--viz-note);
+}
+.viz__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.viz__legend-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+.viz__legend-swatch--strong {
+  border-top-color: var(--viz-edge);
+  border-top-width: 4px;
+}
+.viz__legend-swatch--weak {
+  border-top-color: var(--viz-edge);
+  border-top-style: dashed;
+}
+.viz__legend-swatch--bridge {
+  border-top-color: #e3b341;
+  border-top-width: 4px;
+}
+.viz__legend-swatch--new {
+  border-top-color: #3fb950;
+  border-top-style: dashed;
+}
+.viz__legend-swatch--dim {
+  border-top-color: var(--viz-edge);
+  border-top-style: dotted;
+  opacity: 0.5;
+}
+.viz__legend-swatch--positive {
+  border-top-color: #3fb950;
+  border-top-width: 4px;
+}
+.viz__legend-swatch--negative {
+  border-top-color: #f85149;
+  border-top-style: dashed;
+}
+.viz__note {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  color: var(--viz-note);
+  border-top: 1px solid var(--viz-border);
+  background: var(--viz-head-bg);
+}
+
+/* ─────────────── Extracted book figures (<BookFigure>) ─────────────── */
+.bookfig {
+  margin: 1.6rem 0;
+  border: 1px solid var(--viz-border);
+  border-radius: 10px;
+  background: var(--viz-bg);
+  overflow: hidden;
+}
+.bookfig__frame {
+  /* Always light: PDF crops are white-background, so frame them on white in both themes. */
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+.bookfig__img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border-radius: 4px;
+}
+.bookfig__cap {
+  padding: 0.6rem 1rem;
+  font-size: 0.84rem;
+  color: var(--viz-note);
+  border-top: 1px solid var(--viz-border);
+  background: var(--viz-head-bg);
+}
+.bookfig__label {
+  color: var(--ifm-font-color-base);
+}
+.bookfig__src {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* ───────────────────────── Callouts ───────────────────────── */
+.callout {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+  background: var(--viz-head-bg);
+}
+.callout__label {
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.3rem;
+}
+.callout__icon {
+  margin-right: 0.4rem;
+}
+.callout__body > :last-child {
+  margin-bottom: 0;
+}
+.callout--why {
+  border-left-color: #3056d3;
+}
+.callout--misconception {
+  border-left-color: #d29922;
+}
+.callout--application {
+  border-left-color: #3fb950;
+}
+
+/* ───────────────────────── Comprehension check ───────────────────────── */
+.check {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px dashed var(--ifm-color-primary);
+  border-radius: 8px;
+  background: var(--viz-bg);
+}
+.check__label {
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.4rem;
+}
+.check__reveal {
+  margin-top: 0.6rem;
+  border: 1px solid var(--ifm-color-primary);
+  background: transparent;
+  color: var(--ifm-color-primary);
+  border-radius: 6px;
+  padding: 0.35rem 0.9rem;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.check__reveal:hover {
+  background: var(--ifm-color-primary);
+  color: #fff;
+}
+.check__answer {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--viz-border);
+}
+.check__answer-label {
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #3fb950;
+  margin-bottom: 0.25rem;
+}
+
+/* ───────────────────────── Flashcards ───────────────────────── */
+.flashcards {
+  margin: 1.2rem 0;
+}
+.flashcards__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.82rem;
+}
+.flashcards__progress {
+  flex: 1;
+  height: 8px;
+  background: var(--viz-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.flashcards__progress-fill {
+  height: 100%;
+  background: #3fb950;
+  transition: width 0.3s ease;
+}
+.flashcards__reset {
+  border: 1px solid var(--viz-border);
+  background: var(--viz-bg);
+  color: inherit;
+  border-radius: 6px;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+.flashcard {
+  display: block;
+  width: 100%;
+  text-align: left;
+  min-height: 150px;
+  border: 1px solid var(--viz-border);
+  border-radius: 10px;
+  background: var(--viz-bg);
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.flashcard:hover {
+  border-color: var(--ifm-color-primary);
+}
+.flashcard--flipped {
+  background: var(--viz-head-bg);
+}
+.flashcard__concept {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ifm-color-primary);
+  margin-bottom: 0.5rem;
+}
+.flashcard__text {
+  display: block;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+.flashcard__text--answer {
+  font-size: 0.95rem;
+  color: var(--ifm-font-color-base);
+}
+.flashcard__hint {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: 0.74rem;
+  color: var(--viz-note);
+}
+.flashcards__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.fc-btn {
+  flex: 1;
+  border: 1px solid var(--viz-border);
+  background: var(--viz-bg);
+  color: inherit;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.fc-btn--got {
+  border-color: #3fb950;
+  color: #3fb950;
+}
+.fc-btn--review {
+  border-color: #d29922;
+  color: #d29922;
+}
+.flashcards__empty {
+  color: var(--viz-note);
+  font-style: italic;
+}
+
+/* ───────────────────────── Concept sections ───────────────────────── */
+.concept-objective {
+  color: var(--viz-note);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: -0.4rem;
+}

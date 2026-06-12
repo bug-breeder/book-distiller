@@ -19,6 +19,9 @@ import {
   lintEdgesAgainstText,
 } from './diagrams/lint.js';
 import { pdfPageText } from './pdf/text.js';
+import { generateInteractiveBook } from './interactive/generate.js';
+import { parseLesson } from './interactive/parse.js';
+import { extractFigureImages, type FigureToExtract } from './figures/images.js';
 
 const program = new Command();
 
@@ -296,6 +299,98 @@ progressCmd
   .description('Human-readable progress')
   .action(async (slug: string) => {
     console.log(await cmdShow(slug));
+  });
+
+program
+  .command('extract-figures <slug>')
+  .description(
+    "Extract real book figures (tagged with `| concept:` in lesson notes) from the source PDF into book-output/<slug>/figures/ for inline embedding",
+  )
+  .action(async (slug: string) => {
+    const metaPath = path.join('book-output', slug, 'metadata.json');
+    if (!(await fs.pathExists(metaPath))) {
+      console.error(`Error: metadata not found: ${metaPath} — run "study-mate parse" first`);
+      process.exit(1);
+      return;
+    }
+    const meta: BookMetadata = await fs.readJson(metaPath);
+    if (meta.sourceFile.toLowerCase().endsWith('.epub') || !(await fs.pathExists(meta.sourceFile))) {
+      console.error(
+        `Error: figure extraction needs the source PDF (${meta.sourceFile}); not found or not a PDF`,
+      );
+      process.exit(1);
+      return;
+    }
+    const lessonsDir = path.join('book-output', slug, 'lessons');
+
+    // Collect every `| concept:`-tagged figure across prepared chapters, resolving
+    // each to its authoritative page via the deterministic figures extractor.
+    const wanted = new Map<string, FigureToExtract>();
+    let chaptersScanned = 0;
+    for (const ch of meta.chapters) {
+      if (ch.chapterNumber <= 0 || ch.pageRange === undefined) continue;
+      const lessonPath = path.join(lessonsDir, ch.file.replace(/\.md$/, '-lesson.md'));
+      if (!(await fs.pathExists(lessonPath))) continue;
+      const lesson = parseLesson(await fs.readFile(lessonPath, 'utf-8'));
+      const tagged = lesson.figures.filter((f) => f.concept && /^figure/i.test(f.label));
+      if (tagged.length === 0) continue;
+      chaptersScanned++;
+      const locs = await figuresFromPdf(meta.sourceFile, ch.pageRange.start, ch.pageRange.end);
+      const byLabel = new Map(locs.map((l) => [l.label, l]));
+      for (const f of tagged) {
+        if (wanted.has(f.label)) continue;
+        const loc = byLabel.get(f.label);
+        const page = loc?.page ?? Number(f.location.match(/p\.\s*(\d+)/i)?.[1] ?? NaN);
+        if (!Number.isInteger(page)) {
+          console.warn(`  ! ${f.label}: could not resolve a page — skipping`);
+          continue;
+        }
+        wanted.set(f.label, { label: f.label, page, caption: loc?.caption ?? f.caption });
+      }
+    }
+
+    if (wanted.size === 0) {
+      console.log(
+        'No `| concept:`-tagged figures found in lesson notes. Tag a figure line like:\n' +
+          '  - **Figure 3.13** — p. 85 — "…" | concept: Graph Partitioning and Betweenness',
+      );
+      return;
+    }
+
+    const outDir = path.join('book-output', slug, 'figures');
+    try {
+      const manifest = await extractFigureImages(meta.sourceFile, outDir, [...wanted.values()]);
+      await fs.writeJson(path.join(outDir, 'manifest.json'), manifest, { spaces: 1 });
+      const ok = manifest.filter((m) => m.ok);
+      const failed = manifest.filter((m) => !m.ok);
+      console.log(`✓ Extracted ${ok.length}/${manifest.length} figures → ${outDir}/`);
+      for (const f of failed) {
+        if (!f.ok) console.log(`  ! ${f.label}: ${f.reason}`);
+      }
+      console.log(`\nNext: study-mate interactive ${slug}`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('interactive <slug>')
+  .description('Generate the interactive Docusaurus book from a parsed book and its lesson notes')
+  .action(async (slug: string) => {
+    try {
+      const result = await generateInteractiveBook(slug);
+      console.log(`✓ Generated interactive book for "${slug}"`);
+      console.log(`  Prepared chapters: ${result.prepared}/${result.total}`);
+      if (result.skipped.length > 0) {
+        console.log(`  Not yet prepped (no lesson note): ${result.skipped.join(', ')}`);
+      }
+      console.log(`  Pages written: ${result.written.length} → interactive-book/docs/${slug}/`);
+      console.log(`\nNext: cd interactive-book && pnpm start`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    }
   });
 
 program.parseAsync().catch((err) => {
