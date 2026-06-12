@@ -26,6 +26,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { parseAllowlist, addToAllowlist, packageName } from './viz/allowlist.js';
 import { lintSimSource } from './viz/lint.js';
+import { checkConcepts } from './lessons/clarity.js';
 
 const execFileAsync = promisify(execFile);
 const VIZ_ALLOWLIST = path.join('interactive-book', 'viz-allowlist.json');
@@ -458,6 +459,34 @@ program
       process.exit(1);
     }
     console.log(`✓ ${files.length} sim(s) clean (imports on allowlist, no banned APIs).`);
+  });
+
+program
+  .command('lint-lessons <slug>')
+  .description('Clarity check: flag concepts missing/short "Dig deeper" blocks or using vague filler')
+  .action(async (slug: string) => {
+    const lessonsDir = path.join('book-output', slug, 'lessons');
+    if (!(await fs.pathExists(lessonsDir))) {
+      console.log(`No lessons for "${slug}" (${lessonsDir} not found). Run /tutor-prep ${slug} first.`);
+      return;
+    }
+    const files = (await fs.readdir(lessonsDir)).filter((f) => f.endsWith('-lesson.md')).sort();
+    let errors = 0;
+    let warnings = 0;
+    for (const file of files) {
+      const lesson = parseLesson(await fs.readFile(path.join(lessonsDir, file), 'utf-8'));
+      for (const f of checkConcepts(lesson.concepts)) {
+        if (f.level === 'error') {
+          errors++;
+          console.error(`✗ ${file} — ${f.concept}: ${f.message}`);
+        } else {
+          warnings++;
+          console.warn(`⚠ ${file} — ${f.concept}: ${f.message}`);
+        }
+      }
+    }
+    console.log(`\n${files.length} lesson(s): ${errors} error(s), ${warnings} warning(s).`);
+    if (errors > 0) process.exit(1);
   });
 
 program.parseAsync().catch((err) => {
