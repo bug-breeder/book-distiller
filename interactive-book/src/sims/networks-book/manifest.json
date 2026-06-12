@@ -1,0 +1,101 @@
+{
+  "slug": "networks-book",
+  "sims": [
+    {
+      "chapter": 1,
+      "concept": "Game theory and strategic interdependence",
+      "title": "Braess's Paradox",
+      "caption": "Toggle the shortcut road and watch how individually rational routing makes everyone worse off.",
+      "file": "ch1/game-theory-and-strategic-interdependence.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 1,
+      "concept": "Network dynamics: structural cascades",
+      "title": "Structural Cascade",
+      "caption": "Step through adoption one round at a time — adjust the threshold and see how cluster density can block the cascade.",
+      "file": "ch1/network-dynamics--structural-cascades.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 2,
+      "concept": "Distance and Breadth-First Search",
+      "title": "BFS: Distance Layer by Layer",
+      "caption": "Click any node to start BFS from it. Watch layers expand outward — the layer number IS the distance.",
+      "file": "ch2/distance-and-breadth-first-search.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 2,
+      "concept": "Connectivity and Components",
+      "title": "Connected Components",
+      "caption": "Click an edge to remove it; click \"Add random edge\" to reconnect. Each color is one maximal connected component.",
+      "file": "ch2/connectivity-and-components.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 2,
+      "concept": "Giant Components",
+      "title": "Giant Component Emergence",
+      "caption": "Add edges one by one and watch one component grow to dominate. The largest is the \"giant component.\"",
+      "file": "ch2/giant-components.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 3,
+      "concept": "Triadic Closure",
+      "title": "Triadic Closure",
+      "caption": "A and C are both friends with B. Click \"Close triangle\" to see triadic closure form the A–C edge.",
+      "file": "ch3/triadic-closure.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 3,
+      "concept": "Bridges and Local Bridges",
+      "title": "Bridges and Local Bridges",
+      "caption": "Click an edge to remove it. See which removals disconnect the graph (bridge) or just lengthen the path (local bridge).",
+      "file": "ch3/bridges-and-local-bridges.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 3,
+      "concept": "Embeddedness and Structural Holes",
+      "title": "Structural Holes & Brokerage",
+      "caption": "Compare two nodes: A is deeply embedded in one dense cluster; B spans structural holes between three separate groups.",
+      "file": "ch3/embeddedness-and-structural-holes.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 4,
+      "concept": "Schelling's Segregation Model",
+      "title": "Schelling's Segregation Model",
+      "caption": "Drag the threshold slider and press Run — watch mild individual preference cascade into neighbourhood-scale segregation.",
+      "file": "ch4/schellings-segregation-model.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 4,
+      "concept": "Affiliation Networks and Foci",
+      "title": "Affiliation Networks and Foci",
+      "caption": "Click a focus to highlight everyone who shares it — that shared context is the seed of focal closure.",
+      "file": "ch4/affiliation-networks-and-foci.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 5,
+      "concept": "Signed graphs and the balance conditions",
+      "title": "Signed Triangle Explorer",
+      "caption": "Click any edge to flip it + / −. The triangle is balanced when it has 1 or 3 positive edges.",
+      "file": "ch5/signed-graphs-and-the-balance-conditions.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 5,
+      "concept": "The Balance Theorem",
+      "title": "Balance Theorem: Two Camps",
+      "caption": "A balanced complete graph MUST split into two friend-cliques at war with each other. Move nodes between camps and watch every triangle stay balanced.",
+      "file": "ch5/the-balance-theorem.tsx",
+      "libs": []
+    }
+  ]
+}
