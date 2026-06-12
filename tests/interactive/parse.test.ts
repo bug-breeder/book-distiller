@@ -35,6 +35,11 @@ source: { type: pdf, pages: "99-132" }
 - **Why it matters:** Segregation emerges without anyone seeking it.
 - **Check:** Why no integration from random start? — **Ideal answer:** Local moves cannot achieve global coordination.
 
+#### Dig deeper
+**Intuition:** From a random start, same-type agents cluster by chance; any agent below its threshold relocates, which pushes the neighbors it leaves below threshold too.
+
+**Worked example:** With threshold t = 3 on a grid where each cell has 8 neighbors, an agent with only 2 same-type neighbors (2 < 3) is unsatisfied and relocates; the integrated checkerboard satisfies everyone but is unreachable from a random start.
+
 ## Figures / Tables / Equations
 
 - **Figure 4.1** — p. 101 — "School friendship network colored by race."
@@ -145,11 +150,14 @@ describe('parseLesson', () => {
     // multi-paragraph + inequalities + list items are preserved verbatim
     expect(homophily?.digDeeper).toContain('5 < 8');
     expect(homophily?.digDeeper).toContain('- a list item survives the capture');
-    // the next concept (no Dig deeper) leaves it undefined; capture stops at ## Figures
-    const schelling = lesson.concepts.find((c) => c.name === "Schelling's Segregation Model");
-    expect(schelling?.digDeeper).toBeUndefined();
-    // ## Figures content never leaks into a concept body
+    // C1's block terminates at the next concept heading (### C7); figures from the later section never leak in.
     expect(homophily?.digDeeper).not.toContain('Figure 4.1');
+    // C7 is the LAST concept: its Dig deeper capture terminates at the `## Figures` heading
+    // (the `##` break + final flush) and must not absorb the figure lines that follow.
+    const schelling = lesson.concepts.find((c) => c.name === "Schelling's Segregation Model");
+    expect(schelling?.digDeeper).toBeDefined();
+    expect(schelling?.digDeeper).toContain('threshold t = 3');
+    expect(schelling?.digDeeper).not.toContain('Chicago');
   });
 
   it('parses a visualization with no concept anchor and a signed edge label', () => {

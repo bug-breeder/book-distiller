@@ -456,6 +456,3 @@
 .digDeeper__body > :last-child {
   margin-bottom: 0;
 }
-[data-theme='dark'] .digDeeper {
-  border-color: var(--ifm-color-emphasis-300);
-}
