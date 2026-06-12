@@ -85,7 +85,7 @@ For each concept in the **Teaching arc**, in order:
 1. Give the **Explanation** in your own words — 2–4 sentences, conversational.
 2. If a figure/table/equation in the note relates, point to it by location: "Open **<label>** (<location>) — notice <what to look for>." Do NOT redraw it. If the note contains an inline ` ```mermaid ` diagram for this concept, also show its terminal view by running `pnpm exec tsx src/cli.ts diagrams render <lesson-note-path>` and pasting the relevant block's adjacency output; markdown tables in the note can be shown as-is.
 3. Ask the concept's **Check** question. Wait for the user.
-4. If correct → affirm briefly and advance. If not → re-explain a different way (analogy, smaller step), watch for the **Misconception**, then re-check. After at most two re-explanation attempts on the same concept, note it as a likely gap, move on to the next concept, and raise it during the Feynman handoff. Never loop a single concept indefinitely.
+4. If correct → affirm briefly and advance. If not → re-explain a different way (analogy, smaller step) — the concept's `#### Dig deeper` block holds the intuition and a worked example to lean on when a learner is stuck or asks "why" — watch for the **Misconception**, then re-check. After at most two re-explanation attempts on the same concept, note it as a likely gap, move on to the next concept, and raise it during the Feynman handoff. Never loop a single concept indefinitely.
 One concept per turn. Do not dump multiple concepts at once.
 
 ### 6. Apply

@@ -96,6 +96,12 @@ pnpm exec tsx src/cli.ts figures-fix "book-output/$0/lessons/<chapter-slug>-less
 ```
 This deterministically rewrites any drifted figure/table page citation to the authoritative page (no re-dispatch — we know the exact page). Report what it corrected.
 
+**e. Clarity lint (all modes).** After the note is written, run:
+```bash
+pnpm exec tsx src/cli.ts lint-lessons $0
+```
+If it exits non-zero because a concept in the just-written chapter is missing a `#### Dig deeper` block, re-dispatch the same chapter once, instructing the analyst to add the missing Dig-deeper block(s) (intuition + worked example). Warnings (short Dig deeper, vague filler) are advisory — report them but do not re-dispatch.
+
 **After all chapters:** print `"X chapters processed, Y skipped. Re-run to resume if interrupted."`
 
 ### 7. Report completion

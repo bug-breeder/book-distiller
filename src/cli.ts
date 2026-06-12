@@ -19,6 +19,17 @@ import {
   lintEdgesAgainstText,
 } from './diagrams/lint.js';
 import { pdfPageText } from './pdf/text.js';
+import { generateInteractiveBook } from './interactive/generate.js';
+import { parseLesson } from './interactive/parse.js';
+import { extractFigureImages, type FigureToExtract } from './figures/images.js';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { parseAllowlist, addToAllowlist, packageName } from './viz/allowlist.js';
+import { lintSimSource } from './viz/lint.js';
+import { checkConcepts } from './lessons/clarity.js';
+
+const execFileAsync = promisify(execFile);
+const VIZ_ALLOWLIST = path.join('interactive-book', 'viz-allowlist.json');
 
 const program = new Command();
 
@@ -296,6 +307,186 @@ progressCmd
   .description('Human-readable progress')
   .action(async (slug: string) => {
     console.log(await cmdShow(slug));
+  });
+
+program
+  .command('extract-figures <slug>')
+  .description(
+    "Extract real book figures (tagged with `| concept:` in lesson notes) from the source PDF into book-output/<slug>/figures/ for inline embedding",
+  )
+  .action(async (slug: string) => {
+    const metaPath = path.join('book-output', slug, 'metadata.json');
+    if (!(await fs.pathExists(metaPath))) {
+      console.error(`Error: metadata not found: ${metaPath} — run "study-mate parse" first`);
+      process.exit(1);
+      return;
+    }
+    const meta: BookMetadata = await fs.readJson(metaPath);
+    if (meta.sourceFile.toLowerCase().endsWith('.epub') || !(await fs.pathExists(meta.sourceFile))) {
+      console.error(
+        `Error: figure extraction needs the source PDF (${meta.sourceFile}); not found or not a PDF`,
+      );
+      process.exit(1);
+      return;
+    }
+    const lessonsDir = path.join('book-output', slug, 'lessons');
+
+    // Collect every `| concept:`-tagged figure across prepared chapters, resolving
+    // each to its authoritative page via the deterministic figures extractor.
+    const wanted = new Map<string, FigureToExtract>();
+    let chaptersScanned = 0;
+    for (const ch of meta.chapters) {
+      if (ch.chapterNumber <= 0 || ch.pageRange === undefined) continue;
+      const lessonPath = path.join(lessonsDir, ch.file.replace(/\.md$/, '-lesson.md'));
+      if (!(await fs.pathExists(lessonPath))) continue;
+      const lesson = parseLesson(await fs.readFile(lessonPath, 'utf-8'));
+      const tagged = lesson.figures.filter((f) => f.concept && /^figure/i.test(f.label));
+      if (tagged.length === 0) continue;
+      chaptersScanned++;
+      const locs = await figuresFromPdf(meta.sourceFile, ch.pageRange.start, ch.pageRange.end);
+      const byLabel = new Map(locs.map((l) => [l.label, l]));
+      for (const f of tagged) {
+        if (wanted.has(f.label)) continue;
+        const loc = byLabel.get(f.label);
+        const page = loc?.page ?? Number(f.location.match(/p\.\s*(\d+)/i)?.[1] ?? NaN);
+        if (!Number.isInteger(page)) {
+          console.warn(`  ! ${f.label}: could not resolve a page — skipping`);
+          continue;
+        }
+        wanted.set(f.label, { label: f.label, page, caption: loc?.caption ?? f.caption });
+      }
+    }
+
+    if (wanted.size === 0) {
+      console.log(
+        'No `| concept:`-tagged figures found in lesson notes. Tag a figure line like:\n' +
+          '  - **Figure 3.13** — p. 85 — "…" | concept: Graph Partitioning and Betweenness',
+      );
+      return;
+    }
+
+    const outDir = path.join('book-output', slug, 'figures');
+    try {
+      const manifest = await extractFigureImages(meta.sourceFile, outDir, [...wanted.values()]);
+      await fs.writeJson(path.join(outDir, 'manifest.json'), manifest, { spaces: 1 });
+      const ok = manifest.filter((m) => m.ok);
+      const failed = manifest.filter((m) => !m.ok);
+      console.log(`✓ Extracted ${ok.length}/${manifest.length} figures → ${outDir}/`);
+      for (const f of failed) {
+        if (!f.ok) console.log(`  ! ${f.label}: ${f.reason}`);
+      }
+      console.log(`\nNext: study-mate interactive ${slug}`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('interactive <slug>')
+  .description('Generate the interactive Docusaurus book from a parsed book and its lesson notes')
+  .action(async (slug: string) => {
+    try {
+      const result = await generateInteractiveBook(slug);
+      console.log(`✓ Generated interactive book for "${slug}"`);
+      console.log(`  Prepared chapters: ${result.prepared}/${result.total}`);
+      if (result.skipped.length > 0) {
+        console.log(`  Not yet prepped (no lesson note): ${result.skipped.join(', ')}`);
+      }
+      console.log(`  Pages written: ${result.written.length} → interactive-book/docs/${slug}/`);
+      console.log(`\nNext: cd interactive-book && pnpm start`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('add-viz-lib <pkg>')
+  .description('Install a new sim library into interactive-book and add it to the viz allowlist')
+  .action(async (pkg: string) => {
+    const bare = packageName(pkg.replace(/@[^/]+$/, '')); // strip a trailing @version
+    try {
+      console.log(`Installing ${pkg} into interactive-book/ ...`);
+      await execFileAsync('pnpm', ['add', pkg], { cwd: 'interactive-book', maxBuffer: 32 * 1024 * 1024 });
+      const current = (await fs.pathExists(VIZ_ALLOWLIST))
+        ? parseAllowlist(await fs.readFile(VIZ_ALLOWLIST, 'utf-8'))
+        : [];
+      const next = addToAllowlist(current, bare);
+      await fs.writeJson(VIZ_ALLOWLIST, { allowed: next }, { spaces: 2 });
+      console.log(`✓ added "${bare}" to the allowlist (${next.length} libs). Commit the lockfile + allowlist.`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('lint-sims <slug>')
+  .description('Lint generated sim components for off-allowlist imports and banned APIs')
+  .action(async (slug: string) => {
+    const simsDir = path.join('interactive-book', 'src', 'sims', slug);
+    if (!(await fs.pathExists(simsDir))) {
+      console.log(`No sims for "${slug}" (${simsDir} not found). Run /visualize ${slug} first.`);
+      return;
+    }
+    const allow = (await fs.pathExists(VIZ_ALLOWLIST))
+      ? parseAllowlist(await fs.readFile(VIZ_ALLOWLIST, 'utf-8'))
+      : [];
+    // Recursively collect .tsx sim files (chN/*.tsx).
+    const files: string[] = [];
+    for (const entry of await fs.readdir(simsDir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        const sub = path.join(simsDir, entry.name);
+        for (const f of await fs.readdir(sub)) if (f.endsWith('.tsx')) files.push(path.join(sub, f));
+      }
+    }
+    let failed = 0;
+    for (const file of files) {
+      const r = lintSimSource(file, await fs.readFile(file, 'utf-8'), allow);
+      if (!r.ok) {
+        failed++;
+        const reasons = [
+          ...r.offendingImports.map((i) => `off-allowlist import "${i}"`),
+          ...r.bannedApis.map((a) => `banned API "${a}"`),
+          ...r.libMismatch,
+        ];
+        console.error(`✗ ${path.relative('interactive-book', file)} — ${reasons.join('; ')}`);
+      }
+    }
+    if (failed > 0) {
+      console.error(`\n${failed}/${files.length} sim(s) failed lint.`);
+      process.exit(1);
+    }
+    console.log(`✓ ${files.length} sim(s) clean (imports on allowlist, no banned APIs).`);
+  });
+
+program
+  .command('lint-lessons <slug>')
+  .description('Clarity check: flag concepts missing/short "Dig deeper" blocks or using vague filler')
+  .action(async (slug: string) => {
+    const lessonsDir = path.join('book-output', slug, 'lessons');
+    if (!(await fs.pathExists(lessonsDir))) {
+      console.log(`No lessons for "${slug}" (${lessonsDir} not found). Run /tutor-prep ${slug} first.`);
+      return;
+    }
+    const files = (await fs.readdir(lessonsDir)).filter((f) => f.endsWith('-lesson.md')).sort();
+    let errors = 0;
+    let warnings = 0;
+    for (const file of files) {
+      const lesson = parseLesson(await fs.readFile(path.join(lessonsDir, file), 'utf-8'));
+      for (const f of checkConcepts(lesson.concepts)) {
+        if (f.level === 'error') {
+          errors++;
+          console.error(`✗ ${file} — ${f.concept}: ${f.message}`);
+        } else {
+          warnings++;
+          console.warn(`⚠ ${file} — ${f.concept}: ${f.message}`);
+        }
+      }
+    }
+    console.log(`\n${files.length} lesson(s): ${errors} error(s), ${warnings} warning(s).`);
+    if (errors > 0) process.exit(1);
   });
 
 program.parseAsync().catch((err) => {

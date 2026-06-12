@@ -1,0 +1,25 @@
+# Dependencies
+/node_modules
+
+# Production
+/build
+
+# Generated files
+.docusaurus
+.cache-loader
+
+# Generated book content (derived from book-output/ via `study-mate interactive`)
+/docs
+# Extracted book figure images (derived from the source PDF; copyrighted, kept local)
+/static/figures
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
