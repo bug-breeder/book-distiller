@@ -12,13 +12,24 @@ Aim for 3–7 concepts. This is the lesson plan the tutor follows top to bottom.
 ## Concepts
 
 ### C1 — <concept name>
-- **Explanation:** 2–4 sentences, plain English, concrete. This is the tutor's opening script — no jargon dumps.
+- **Explanation:** The concrete visible summary a learner reads first. 2–4 sentences, plain English. MUST carry a concrete anchor — a named quantity, a one-line concrete example, or the core intuition stated plainly. State what the thing IS and how you'd recognize or compute it; never a bare textbook definition.
 - **Why it matters:** 1–2 sentences.
 - **Check:** one question that proves understanding (not recall). — **Ideal answer:** <answer>
 - **Misconception:** the single most common wrong mental model, in one sentence.
 - **Application:** one concrete real-life use. OMIT THIS LINE ENTIRELY if the chapter offers no genuine application — never invent one.
 
-(Repeat `### C2`, `### C3`, … for every concept in the teaching arc.)
+#### Dig deeper
+**Intuition:** plain-English WHY the mechanism works / why the formula has the shape it does — the mental model, not a restatement of the summary.
+
+**Worked example:** a fully stepped example with every number and term shown. REQUIRED whenever the concept has any formula or procedure. Use the chapter's own example when it has one.
+
+(Repeat `### C2`, `### C3`, … for every concept in the teaching arc. Every concept MUST have a `#### Dig deeper` block.)
+
+**Clarity rules (non-negotiable):**
+- Write the `#### Dig deeper` body **left-aligned** (no leading indentation) so it renders as prose, not a code block. Use `**bold:**` mini-labels (`**Intuition:**`, `**Worked example:**`), not deeper headings.
+- Plain-text math only: `2pq`, `4/9`, `5 < 8`. No `$…$`.
+- **Banned vagueness** — never assert importance without substance. Do not write: "plays a key role", "plays an important role", "is important", "is crucial", "is essential", "various", "a number of", "in many ways", "as we will see", "it is interesting", "fundamental concept", "key concept". Replace each with the specific fact.
+- **Self-review before finishing:** every Explanation has a concrete anchor; every concept has a `#### Dig deeper`; every formula/procedure concept has a numeric worked example; no banned phrase appears.
 
 ## Figures / Tables / Equations
 Every figure, table, diagram, or key equation the chapter uses to make a point. One per line:
