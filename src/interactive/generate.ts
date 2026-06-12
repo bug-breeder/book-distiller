@@ -7,25 +7,25 @@ import fs from 'fs-extra';
 import type { BookMetadata, ChapterIndex } from '../parser/types.js';
 import type { FigureImage } from '../figures/images.js';
 import { parseLesson } from './parse.js';
-import { placementsFor, type WidgetPlacement } from './registry.js';
-import type { Concept, FigureRef, GraphFigureSpec, ParsedLesson } from './types.js';
+import type { Concept, FigureRef, GraphFigureSpec, ParsedLesson, SimEntry } from './types.js';
 
 const SITE_DOCS = path.join('interactive-book', 'docs');
 const SITE_STATIC = path.join('interactive-book', 'static');
 
 type OkImage = Extract<FigureImage, { ok: true }>;
 
-/** Per-chapter rendering context: widget/figure placements and extracted book images. */
+/** Per-chapter rendering context: figures, extracted book images, and sims. */
 interface RenderCtx {
   slug: string;
   bookTitle: string;
-  placements: WidgetPlacement[];
-  usedWidgets: Set<WidgetPlacement>;
   figures: GraphFigureSpec[];
   usedFigures: Set<GraphFigureSpec>;
   bookFigures: FigureRef[];
   usedBookFigures: Set<FigureRef>;
   imageByLabel: Map<string, OkImage>;
+  /** Sims for this chapter, paired with their import identifier index. */
+  sims: { entry: SimEntry; index: number }[];
+  usedSims: Set<number>;
 }
 
 /** Escape prose for inline MDX (so `<`, `{` etc. are not parsed as JSX). */
@@ -115,16 +115,16 @@ function renderConcept(concept: Concept, ctx: RenderCtx): string {
   // from the PDF and embedded inline next to the concept they illustrate.
   parts.push(...bookFiguresForConcept(name, ctx));
 
-  if (concept.whyItMatters) parts.push(`<Callout variant="why" text={${jsStr(concept.whyItMatters)}} />`);
-
-  // Drop in any interactive widget anchored to this concept (loose substring match).
-  for (const p of ctx.placements) {
-    if (ctx.usedWidgets.has(p)) continue;
-    if (name.includes(p.afterConcept.toLowerCase())) {
-      parts.push(p.jsx);
-      ctx.usedWidgets.add(p);
+  // AI-authored sims anchored to this concept (exact concept-name match).
+  for (const {entry, index} of ctx.sims) {
+    if (ctx.usedSims.has(index)) continue;
+    if (entry.concept.toLowerCase().trim() === name) {
+      parts.push(`<SimHost meta={simMeta_${index}} component={Sim_${index}} />`);
+      ctx.usedSims.add(index);
     }
   }
+
+  if (concept.whyItMatters) parts.push(`<Callout variant="why" text={${jsStr(concept.whyItMatters)}} />`);
 
   if (concept.check) {
     parts.push(`<Check question={${jsStr(concept.check.question)}} answer={${jsStr(concept.check.idealAnswer)}} />`);
@@ -138,24 +138,28 @@ function renderConcept(concept: Concept, ctx: RenderCtx): string {
   return parts.join('\n\n');
 }
 
-function renderChapter(
+export function renderChapter(
   lesson: ParsedLesson,
   chapter: ChapterIndex,
   slug: string,
   bookTitle: string,
   imageByLabel: Map<string, OkImage>,
+  sims: SimEntry[],
 ): string {
   const base = baseName(chapter);
+  const chapterSims = sims
+    .filter((s) => s.chapter === chapter.chapterNumber)
+    .map((entry, index) => ({entry, index}));
   const ctx: RenderCtx = {
     slug,
     bookTitle,
-    placements: placementsFor(slug, chapter.chapterNumber),
-    usedWidgets: new Set<WidgetPlacement>(),
     figures: lesson.visualizations,
     usedFigures: new Set<GraphFigureSpec>(),
     bookFigures: lesson.figures.filter((f) => f.concept && imageByLabel.has(f.label)),
     usedBookFigures: new Set<FigureRef>(),
     imageByLabel,
+    sims: chapterSims,
+    usedSims: new Set<number>(),
   };
 
   const out: string[] = [];
@@ -170,10 +174,14 @@ function renderChapter(
     ].join('\n'),
   );
   out.push(`import reviews from './${base}.reviews.json';`);
+  for (const {entry, index} of ctx.sims) {
+    const spec = `@site/src/sims/${slug}/${entry.file.replace(/\.tsx$/, '')}`;
+    out.push(`import Sim_${index}, { meta as simMeta_${index} } from '${spec}';`);
+  }
 
   const srcLabel =
     lesson.sourceType === 'pdf' ? `PDF pages ${lesson.sourceRef}` : `source ${lesson.sourceRef}`;
-  const figureCount = lesson.visualizations.length + ctx.bookFigures.length;
+  const figureCount = lesson.visualizations.length + ctx.bookFigures.length + ctx.sims.length;
   out.push(
     `> **Source:** ${mdxText(srcLabel)} · ${lesson.concepts.length} concepts · ${figureCount} figures · ${lesson.reviewItems.length} flashcards`,
   );
@@ -197,17 +205,19 @@ function renderChapter(
   }
 
   // Anything that didn't anchor to a concept name still gets shown.
-  const leftoverWidgets = ctx.placements.filter((p) => !ctx.usedWidgets.has(p));
   const leftoverFigures = lesson.visualizations.filter((f) => !ctx.usedFigures.has(f));
   const leftoverBookFigures = ctx.bookFigures.filter((f) => !ctx.usedBookFigures.has(f));
-  if (leftoverWidgets.length > 0 || leftoverFigures.length > 0 || leftoverBookFigures.length > 0) {
+  const leftoverSims = ctx.sims.filter((s) => !ctx.usedSims.has(s.index));
+  if (leftoverFigures.length > 0 || leftoverBookFigures.length > 0 || leftoverSims.length > 0) {
     out.push('## Explore');
     for (const f of leftoverFigures) out.push(figureJsx(f));
     for (const f of leftoverBookFigures) {
       const img = ctx.imageByLabel.get(f.label);
       if (img) out.push(bookFigureJsx(f, img, ctx));
     }
-    for (const p of leftoverWidgets) out.push(p.jsx);
+    for (const {index} of leftoverSims) {
+      out.push(`<SimHost meta={simMeta_${index}} component={Sim_${index}} />`);
+    }
   }
 
   // Flashcards
@@ -332,6 +342,14 @@ export async function generateInteractiveBook(slug: string): Promise<GenerateRes
     }
   }
 
+  // Load AI-authored sims for this book (from /visualize), if any.
+  let sims: SimEntry[] = [];
+  const simManifestPath = path.join('interactive-book', 'src', 'sims', slug, 'manifest.json');
+  if (await fs.pathExists(simManifestPath)) {
+    const sm = (await fs.readJson(simManifestPath)) as { sims?: SimEntry[] };
+    sims = Array.isArray(sm.sims) ? sm.sims : [];
+  }
+
   const written: string[] = [];
   const preparedNumbers = new Set<number>();
   const skipped: number[] = [];
@@ -345,7 +363,7 @@ export async function generateInteractiveBook(slug: string): Promise<GenerateRes
       continue;
     }
     const lesson = parseLesson(await fs.readFile(lessonPath, 'utf-8'));
-    const mdx = renderChapter(lesson, chapter, slug, meta.title, imageByLabel);
+    const mdx = renderChapter(lesson, chapter, slug, meta.title, imageByLabel, sims);
     const mdxPath = path.join(bookDocs, `${base}.mdx`);
     const reviewsPath = path.join(bookDocs, `${base}.reviews.json`);
     await fs.writeFile(mdxPath, mdx, 'utf-8');
