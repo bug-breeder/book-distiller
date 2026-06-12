@@ -67,3 +67,50 @@ describe('renderChapter unanchored sim', () => {
     expect(hostIdx).toBeGreaterThan(exploreIdx);
   });
 });
+
+describe('renderChapter Dig deeper', () => {
+  const digLesson: ParsedLesson = {
+    chapter: 4,
+    title: 'Chapter 4: Contexts',
+    sourceType: 'pdf',
+    sourceRef: '99-132',
+    teachingArc: [],
+    concepts: [
+      {
+        label: 'C1',
+        name: 'Homophily',
+        explanation: 'Ties form between similar people.',
+        whyItMatters: 'Networks are not random.',
+        digDeeper: '**Intuition:** similar people share contexts.\n\nObserved 5 < 8 -> homophily.',
+      },
+      {
+        label: 'C2',
+        name: 'No Dig',
+        explanation: 'Has no dig deeper.',
+        whyItMatters: '',
+      },
+    ],
+    figures: [],
+    visualizations: [],
+    reviewItems: [],
+  };
+
+  const mdx = renderChapter(digLesson, chapter, 'networks-book', 'Networks', new Map(), []);
+
+  it('emits a <DigDeeper> block for a concept that has one', () => {
+    expect(mdx).toContain('<DigDeeper>');
+    expect(mdx).toContain('Observed 5 &lt; 8'); // inequality MDX-escaped so build is safe
+  });
+
+  it('omits <DigDeeper> for a concept without one', () => {
+    // exactly one DigDeeper in the whole chapter (only C1 has it)
+    expect(mdx.match(/<DigDeeper>/g)?.length).toBe(1);
+  });
+
+  it('places Dig deeper before the why callout', () => {
+    const dig = mdx.indexOf('<DigDeeper>');
+    const why = mdx.indexOf('variant="why"');
+    expect(dig).toBeGreaterThan(-1);
+    expect(why).toBeGreaterThan(dig);
+  });
+});

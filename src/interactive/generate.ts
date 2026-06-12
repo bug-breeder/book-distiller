@@ -124,6 +124,13 @@ function renderConcept(concept: Concept, ctx: RenderCtx): string {
     }
   }
 
+  // The "Dig deeper" disclosure (intuition + worked example). Emitted as MDX children
+  // so its markdown renders; mdxText escapes < > { } so worked-example inequalities and
+  // braces cannot break the build.
+  if (concept.digDeeper) {
+    parts.push(`<DigDeeper>\n\n${mdxText(concept.digDeeper)}\n\n</DigDeeper>`);
+  }
+
   if (concept.whyItMatters) parts.push(`<Callout variant="why" text={${jsStr(concept.whyItMatters)}} />`);
 
   if (concept.check) {
