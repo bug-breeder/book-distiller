@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import type { SimProps, SimMeta } from '../../types';
 import { ControlRow, Button, Slider } from '@site/src/widgets/VizControls';
-import { useRng } from '@site/src/lib/useRng';
+import { mulberry32 } from '@site/src/lib/rng';
 
 export const meta: SimMeta = {
   title: 'Giant Component Emergence',
@@ -85,26 +85,18 @@ const COMP_COLORS_DARK = [
 ];
 
 export default function Sim({ width, seed, isDark }: SimProps) {
-  const rand = useRng(seed);
-
-  // Derive static layout and edge ordering from seed (memoized via refs)
-  const posRef = useRef<Array<{x: number; y: number}> | null>(null);
-  const edgesRef = useRef<Array<[number, number]> | null>(null);
-
   const height = Math.min(Math.round(width * 0.70), 460);
   const PAD = Math.max(20, width * 0.05);
 
-  // Build positions and edges once per seed. Since useRng is seeded, calling
-  // rand() always produces the same sequence for the same seed.
-  // We use refs so we don't re-derive on every render.
-  if (posRef.current === null) {
-    // snapshot the rand calls in order
-    posRef.current = buildNodePositions(N_NODES, rand, width, height, PAD);
-    edgesRef.current = buildEdgeOrder(N_NODES, rand);
-  }
-
-  const positions = posRef.current;
-  const edgeOrder = edgesRef.current!;
+  // Node layout depends on the box size, so recompute it on resize; edge order
+  // depends only on the seed. A FRESH seeded RNG each time keeps both
+  // deterministic — the same seed always replays the same sequence — while the
+  // layout still rescales to the current width (fixes nodes drifting out of box).
+  const positions = useMemo(
+    () => buildNodePositions(N_NODES, mulberry32(seed), width, height, PAD),
+    [seed, width, height, PAD],
+  );
+  const edgeOrder = useMemo(() => buildEdgeOrder(N_NODES, mulberry32(seed)), [seed]);
   const maxEdges = edgeOrder.length;
 
   const [edgeCount, setEdgeCount] = useState(0);

@@ -94,8 +94,7 @@ export default function Sim({ width, isDark }: SimProps) {
   }, []);
 
   const randomize = useCallback(() => {
-    const rand = (): Sign => (Math.floor(Date.now() % 2) === 0 ? '+' : '-');
-    // Use a simple deterministic-ish rotation through the 4 canonical cases
+    // Deterministic rotation through the 4 canonical sign cases.
     setSigns(prev => {
       const pos = countPositive(prev);
       // Cycle through: 2pos → 3pos → 1pos → 0pos → 2pos

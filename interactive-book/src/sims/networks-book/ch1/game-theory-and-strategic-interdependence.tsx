@@ -96,14 +96,6 @@ export default function Sim({ width, isDark }: SimProps) {
     return Math.max(1.5, (n / TOTAL) * 10);
   }
 
-  // Label for a road
-  function roadLabel(n: number, fixedSrc: number, varSrc: number, fixedDst: number, varDst: number, nSrc: number, nDst: number) {
-    void fixedDst; void varDst; void nDst;
-    const cost = travelTime(nSrc, fixedSrc, varSrc);
-    return `${n} drivers · ${Math.round(cost)} min`;
-  }
-  void roadLabel;
-
   // Midpoint helper
   function mid(p1: {x:number;y:number}, p2: {x:number;y:number}) {
     return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };

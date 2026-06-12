@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { SimProps, SimMeta } from '../../types';
 import { ControlRow, Button } from '@site/src/widgets/VizControls';
-import { useRng } from '@site/src/lib/useRng';
 
 export const meta: SimMeta = {
   title: 'BFS: Distance Layer by Layer',
@@ -75,9 +74,7 @@ const LAYER_DARK  = ['#fc8181', '#f6ad55', '#faf089', '#68d391', '#63b3ed', '#b7
 type Step = { distances: Map<number, number>; maxLayer: number; revealedLayer: number };
 
 export default function Sim({ width, isDark }: SimProps) {
-  // seed is available but we don't need randomness for this fixed-layout graph
-  void useRng;
-
+  // Fixed-layout graph — no randomness needed, so `seed` is intentionally unused.
   const [source, setSource] = useState<number | null>(null);
   const [revealedLayer, setRevealedLayer] = useState<number>(-1);
   const [distances, setDistances] = useState<Map<number, number>>(new Map());
