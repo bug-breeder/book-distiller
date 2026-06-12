@@ -430,3 +430,32 @@
   color: var(--ifm-font-color-base); cursor: pointer;
 }
 .vizctl__btn:hover { border-color: var(--ifm-color-primary); }
+
+/* Dig deeper — collapsible intuition + worked example under a concept. */
+.digDeeper {
+  margin: 1rem 0;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  background: var(--ifm-background-surface-color);
+  padding: 0 1rem;
+}
+.digDeeper__summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.6rem 0;
+  color: var(--ifm-color-primary);
+  list-style-position: inside;
+}
+.digDeeper[open] .digDeeper__summary {
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  margin-bottom: 0.5rem;
+}
+.digDeeper__body {
+  padding-bottom: 0.75rem;
+}
+.digDeeper__body > :last-child {
+  margin-bottom: 0;
+}
+[data-theme='dark'] .digDeeper {
+  border-color: var(--ifm-color-emphasis-300);
+}
