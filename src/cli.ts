@@ -22,6 +22,13 @@ import { pdfPageText } from './pdf/text.js';
 import { generateInteractiveBook } from './interactive/generate.js';
 import { parseLesson } from './interactive/parse.js';
 import { extractFigureImages, type FigureToExtract } from './figures/images.js';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { parseAllowlist, addToAllowlist, packageName } from './viz/allowlist.js';
+import { lintSimSource } from './viz/lint.js';
+
+const execFileAsync = promisify(execFile);
+const VIZ_ALLOWLIST = path.join('interactive-book', 'viz-allowlist.json');
 
 const program = new Command();
 
@@ -387,6 +394,26 @@ program
       }
       console.log(`  Pages written: ${result.written.length} → interactive-book/docs/${slug}/`);
       console.log(`\nNext: cd interactive-book && pnpm start`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('add-viz-lib <pkg>')
+  .description('Install a new sim library into interactive-book and add it to the viz allowlist')
+  .action(async (pkg: string) => {
+    const bare = packageName(pkg.replace(/@[^/]+$/, '')); // strip a trailing @version
+    try {
+      console.log(`Installing ${pkg} into interactive-book/ ...`);
+      await execFileAsync('pnpm', ['add', pkg], { cwd: 'interactive-book', maxBuffer: 32 * 1024 * 1024 });
+      const current = (await fs.pathExists(VIZ_ALLOWLIST))
+        ? parseAllowlist(await fs.readFile(VIZ_ALLOWLIST, 'utf-8'))
+        : [];
+      const next = addToAllowlist(current, bare);
+      await fs.writeJson(VIZ_ALLOWLIST, { allowed: next }, { spaces: 2 });
+      console.log(`✓ added "${bare}" to the allowlist (${next.length} libs). Commit the lockfile + allowlist.`);
     } catch (err) {
       console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
