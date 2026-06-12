@@ -1,7 +1,7 @@
 // src/interactive/generate.ts
 // Deterministically generate a Docusaurus interactive book from a parsed book's
-// metadata + tutor lesson notes. No AI: structural transform + a curated widget
-// registry. Output lands in interactive-book/docs/<slug>/.
+// metadata + tutor lesson notes. No AI: a structural transform that anchors each
+// book's AI-authored sim manifest to its concepts. Output → interactive-book/docs/<slug>/.
 import path from 'node:path';
 import fs from 'fs-extra';
 import type { BookMetadata, ChapterIndex } from '../parser/types.js';
