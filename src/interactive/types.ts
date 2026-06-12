@@ -98,3 +98,21 @@ export interface ParsedLesson {
   visualizations: GraphFigureSpec[];
   reviewItems: ReviewItem[];
 }
+
+/** One AI-authored sim, recorded in interactive-book/src/sims/<slug>/manifest.json. */
+export interface SimEntry {
+  chapter: number;
+  /** Exact concept name (matches a `### Cn — <name>` heading); anchors the sim. */
+  concept: string;
+  title: string;
+  caption: string;
+  /** Path under interactive-book/src/sims/<slug>/, e.g. "ch4/schelling.tsx". */
+  file: string;
+  /** Third-party packages the sim imports. */
+  libs: string[];
+}
+
+export interface SimManifest {
+  slug: string;
+  sims: SimEntry[];
+}
