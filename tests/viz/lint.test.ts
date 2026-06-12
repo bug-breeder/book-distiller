@@ -42,4 +42,33 @@ export default function Sim(props: SimProps) { return <div/>; }
     expect(r.ok).toBe(false);
     expect(r.libMismatch.length).toBeGreaterThan(0);
   });
+
+  it('flags an off-allowlist dynamic import()', () => {
+    const src = `async function go(){ const m = await import('canvas-confetti'); }\nexport const meta={title:'',concept:'',caption:'',libs:[]};`;
+    const r = lintSimSource('a.tsx', src, allow);
+    expect(r.ok).toBe(false);
+    expect(r.offendingImports).toContain('canvas-confetti');
+  });
+
+  it('flags an off-allowlist require()', () => {
+    const src = `const m = require('canvas-confetti');\nexport const meta={title:'',concept:'',caption:'',libs:[]};`;
+    const r = lintSimSource('a.tsx', src, allow);
+    expect(r.ok).toBe(false);
+    expect(r.offendingImports).toContain('canvas-confetti');
+  });
+
+  it('does not flag a banned API named only in a comment', () => {
+    const src = `import * as d3 from 'd3';\n// we deliberately avoid eval() and fetch() here\nexport const meta={title:'',concept:'',caption:'',libs:['d3']};`;
+    expect(lintSimSource('a.tsx', src, allow).ok).toBe(true);
+  });
+
+  it('does not flag a fetch method ACCESSED on an object (api.fetch())', () => {
+    const src = `import * as d3 from 'd3';\nconst api = makeApi();\napi.fetch();\nexport const meta={title:'',concept:'',caption:'',libs:['d3']};`;
+    expect(lintSimSource('a.tsx', src, allow).bannedApis).not.toContain('fetch');
+  });
+
+  it('ignores type-only imports (erased at compile, ship no runtime code)', () => {
+    const src = `import type { Stuff } from 'some-types-pkg';\nimport * as d3 from 'd3';\nexport const meta={title:'',concept:'',caption:'',libs:['d3']};`;
+    expect(lintSimSource('a.tsx', src, allow).ok).toBe(true);
+  });
 });
