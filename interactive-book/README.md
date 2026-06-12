@@ -1,41 +1,32 @@
-# Website
+# Interactive book (Docusaurus)
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+The browser learning view for Study Mate, built with [Docusaurus](https://docusaurus.io/).
 
-## Installation
+**You normally don't edit `docs/` here by hand.** Pages under `docs/<slug>/` are *generated* from a book's lesson notes by `pnpm exec tsx src/cli.ts interactive <slug>` (run from the repo root) and are git-ignored. What lives in version control is the site infrastructure (`docusaurus.config.ts`, `src/widgets/`, `src/components/`, `src/theme/`) and the AI-authored sims under `src/sims/<slug>/`.
 
-```bash
-yarn
-```
+## Develop
 
-## Local Development
+From the repo root, generate a book first:
 
 ```bash
-yarn start
+pnpm exec tsx src/cli.ts interactive <slug>
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
+Then run the site:
 
 ```bash
-yarn build
+cd interactive-book
+pnpm install
+pnpm start        # dev server with live reload
+pnpm build        # static build — also the SSR render gate for every page/sim
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+## Layout
 
-## Deployment
+- `src/widgets/` — shared rendering primitives: `GraphFigure` (declarative static diagrams), `SimHost` (mounts AI-authored sims responsively, supplies width/seed/`isDark`), `VizControls` (sliders/toggles), `VizFrame` (chrome).
+- `src/components/` — learning UI: `BookFigure` (extracted PDF images), `DigDeeper` (the collapsible intuition + worked-example disclosure), `Callout`, `Check`, `Flashcards`. Registered globally for MDX via `src/theme/MDXComponents.tsx`.
+- `src/sims/<slug>/` — AI-authored interactive sim components (`.tsx` + `manifest.json`), written by the `/visualize` skill from the allowlisted palette in `../viz-allowlist.json`.
+- `static/figures/<slug>/` — real figure images cropped from source PDFs (git-ignored, derived/copyrighted).
+- `docs/<slug>/` — generated MDX (git-ignored).
 
-Using SSH:
-
-```bash
-USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+See the repo root `README.md` and `CLAUDE.md` for the full pipeline.
