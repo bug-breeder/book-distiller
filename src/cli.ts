@@ -420,6 +420,46 @@ program
     }
   });
 
+program
+  .command('lint-sims <slug>')
+  .description('Lint generated sim components for off-allowlist imports and banned APIs')
+  .action(async (slug: string) => {
+    const simsDir = path.join('interactive-book', 'src', 'sims', slug);
+    if (!(await fs.pathExists(simsDir))) {
+      console.log(`No sims for "${slug}" (${simsDir} not found). Run /visualize ${slug} first.`);
+      return;
+    }
+    const allow = (await fs.pathExists(VIZ_ALLOWLIST))
+      ? parseAllowlist(await fs.readFile(VIZ_ALLOWLIST, 'utf-8'))
+      : [];
+    // Recursively collect .tsx sim files (chN/*.tsx).
+    const files: string[] = [];
+    for (const entry of await fs.readdir(simsDir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        const sub = path.join(simsDir, entry.name);
+        for (const f of await fs.readdir(sub)) if (f.endsWith('.tsx')) files.push(path.join(sub, f));
+      }
+    }
+    let failed = 0;
+    for (const file of files) {
+      const r = lintSimSource(file, await fs.readFile(file, 'utf-8'), allow);
+      if (!r.ok) {
+        failed++;
+        const reasons = [
+          ...r.offendingImports.map((i) => `off-allowlist import "${i}"`),
+          ...r.bannedApis.map((a) => `banned API "${a}"`),
+          ...r.libMismatch,
+        ];
+        console.error(`✗ ${path.relative('interactive-book', file)} — ${reasons.join('; ')}`);
+      }
+    }
+    if (failed > 0) {
+      console.error(`\n${failed}/${files.length} sim(s) failed lint.`);
+      process.exit(1);
+    }
+    console.log(`✓ ${files.length} sim(s) clean (imports on allowlist, no banned APIs).`);
+  });
+
 program.parseAsync().catch((err) => {
   console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);
