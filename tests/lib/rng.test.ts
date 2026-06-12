@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { seedFromString, mulberry32 } from '../../interactive-book/src/lib/rng';
+import { seedFromString, mulberry32 } from '../../interactive-book/src/lib/rng.js';
 
 describe('seedFromString', () => {
   it('is deterministic and differs by input', () => {
