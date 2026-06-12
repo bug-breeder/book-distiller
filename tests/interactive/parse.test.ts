@@ -22,6 +22,14 @@ source: { type: pdf, pages: "99-132" }
 - **Misconception:** Homophily does not mean only befriending identical others.
 - **Application:** Recommender systems exploit homophily.
 
+#### Dig deeper
+**Intuition:** Similar people share contexts, so they meet more often.
+
+**Worked example:** 6 boys, 3 girls, 18 edges. p = 2/3, q = 1/3, so
+2pq = 4/9; expect 8 cross-gender edges. Observed 5 < 8 -> homophily.
+
+- a list item survives the capture
+
 ### C7 — Schelling's Segregation Model
 - **Explanation:** Agents move when too few neighbors match their type.
 - **Why it matters:** Segregation emerges without anyone seeking it.
@@ -127,6 +135,21 @@ describe('parseLesson', () => {
       { source: 'A', target: 'C', kind: 'strong' },
       { source: 'B', target: 'C', kind: 'new' },
     ]);
+  });
+
+  it('captures the #### Dig deeper block into digDeeper', () => {
+    const homophily = lesson.concepts.find((c) => c.name === 'Homophily');
+    expect(homophily?.digDeeper).toBeDefined();
+    expect(homophily?.digDeeper).toContain('**Intuition:**');
+    expect(homophily?.digDeeper).toContain('**Worked example:**');
+    // multi-paragraph + inequalities + list items are preserved verbatim
+    expect(homophily?.digDeeper).toContain('5 < 8');
+    expect(homophily?.digDeeper).toContain('- a list item survives the capture');
+    // the next concept (no Dig deeper) leaves it undefined; capture stops at ## Figures
+    const schelling = lesson.concepts.find((c) => c.name === "Schelling's Segregation Model");
+    expect(schelling?.digDeeper).toBeUndefined();
+    // ## Figures content never leaks into a concept body
+    expect(homophily?.digDeeper).not.toContain('Figure 4.1');
   });
 
   it('parses a visualization with no concept anchor and a signed edge label', () => {

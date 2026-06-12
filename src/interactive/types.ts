@@ -17,6 +17,8 @@ export interface Concept {
   misconception?: string;
   /** Present only when the chapter genuinely supports a real-world use. */
   application?: string;
+  /** Optional `#### Dig deeper` block: intuition + a fully worked example. Multi-paragraph markdown. */
+  digDeeper?: string;
 }
 
 export interface FigureRef {

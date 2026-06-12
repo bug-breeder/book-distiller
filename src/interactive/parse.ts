@@ -61,21 +61,64 @@ function parseTeachingArc(lines: string[]): string[] {
     .map((l) => l.replace(/^\d+\.\s+/, '').trim());
 }
 
+/**
+ * Remove the smallest common leading space-indentation from a block of raw lines, then join.
+ * Lesson notes are space-indented (no tabs), so we count leading spaces only — that keeps the
+ * char count and the visual indent in agreement.
+ */
+function dedent(lines: string[]): string {
+  const indents = lines
+    .filter((l) => l.trim().length > 0)
+    .map((l) => l.match(/^ */)?.[0].length ?? 0);
+  const min = indents.length ? Math.min(...indents) : 0;
+  return lines.map((l) => l.slice(min)).join('\n');
+}
+
 function parseConcepts(lines: string[]): Concept[] {
   const start = lines.findIndex((l) => /^##\s+concepts/i.test(l.trim()));
   if (start === -1) return [];
   const concepts: Concept[] = [];
   let current: Concept | null = null;
+  let digBuf: string[] | null = null; // non-null while capturing a `#### Dig deeper` block
+
+  const flushDig = () => {
+    // No-op when a `#### Dig deeper` precedes any `### Cn` heading (malformed note): nothing to attach to.
+    if (current && digBuf) {
+      const text = dedent(digBuf).trim();
+      if (text) current.digDeeper = text;
+    }
+    digBuf = null;
+  };
+
   for (let i = start + 1; i < lines.length; i++) {
     const raw = lines[i];
     const line = raw.trim();
-    if (/^##\s+/.test(line)) break; // next top-level section
+
+    if (/^##\s+/.test(line)) {
+      flushDig();
+      break; // next top-level section (e.g. ## Figures)
+    }
     const head = line.match(/^###\s+(C\d+)\s*[—–-]\s*(.+)$/);
     if (head) {
+      flushDig();
       if (current) concepts.push(current);
       current = { label: head[1], name: head[2].trim(), explanation: '', whyItMatters: '' };
       continue;
     }
+    if (/^####\s+dig deeper/i.test(line)) {
+      flushDig();
+      digBuf = []; // start capturing the block body
+      continue;
+    }
+    if (/^####\s+/.test(line)) {
+      flushDig(); // any other sub-heading ends a Dig-deeper capture
+      continue;
+    }
+    if (digBuf) {
+      digBuf.push(raw); // inside Dig deeper: keep RAW markdown (blank lines, lists, bold)
+      continue;
+    }
+
     if (!current) continue;
     if (/^-\s*\*\*Explanation:\*\*/i.test(line)) current.explanation = bulletValue(line) ?? '';
     else if (/^-\s*\*\*Why it matters:\*\*/i.test(line)) current.whyItMatters = bulletValue(line) ?? '';
@@ -86,6 +129,7 @@ function parseConcepts(lines: string[]): Concept[] {
     } else if (/^-\s*\*\*Misconception:\*\*/i.test(line)) current.misconception = bulletValue(line);
     else if (/^-\s*\*\*Application:\*\*/i.test(line)) current.application = bulletValue(line);
   }
+  flushDig();
   if (current) concepts.push(current);
   return concepts;
 }
