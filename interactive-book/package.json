@@ -19,18 +19,28 @@
     "@docusaurus/faster": "3.10.1",
     "@docusaurus/preset-classic": "3.10.1",
     "@mdx-js/react": "^3.0.0",
+    "animejs": "^4.4.1",
     "clsx": "^2.0.0",
     "d3": "^7.9.0",
+    "d3-geo": "^3.1.1",
+    "katex": "^0.17.0",
+    "mathjs": "^15.2.0",
+    "matter-js": "^0.20.0",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "recharts": "^3.8.1",
+    "three": "^0.184.0",
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.1",
     "@docusaurus/tsconfig": "3.10.1",
     "@docusaurus/types": "3.10.1",
     "@types/d3": "^7.4.3",
+    "@types/matter-js": "^0.20.2",
     "@types/react": "^19.0.0",
+    "@types/three": "^0.184.1",
     "typescript": "~6.0.2"
   },
   "browserslist": {

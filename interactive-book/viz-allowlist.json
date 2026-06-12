@@ -1,0 +1,13 @@
+{
+  "allowed": [
+    "d3",
+    "three",
+    "matter-js",
+    "animejs",
+    "mathjs",
+    "recharts",
+    "katex",
+    "d3-geo",
+    "topojson-client"
+  ]
+}
