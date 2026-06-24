@@ -1,6 +1,8 @@
 import type { ConceptRecord } from './types.js';
 import { BLOOM_LEVELS } from './types.js';
 import type { CourseValidationFinding } from './types.js';
+import fs from 'fs-extra';
+import path from 'node:path';
 
 const EXPECTED_HEADER = 'ConceptID,ConceptLabel,Dependencies,TaxonomyID,Bloom';
 
@@ -88,4 +90,21 @@ export function validateConceptDag(records: ConceptRecord[]): CourseValidationFi
   if (cycle) err('concepts.csv contains a dependency cycle (must be a DAG)');
 
   return findings;
+}
+
+export async function runValidateConcepts(
+  slug: string,
+): Promise<{ findings: CourseValidationFinding[] }> {
+  const csvPath = path.join('book-output', slug, 'concepts.csv');
+  if (!(await fs.pathExists(csvPath))) {
+    return { findings: [{ level: 'error', message: `not found: ${csvPath}` }] };
+  }
+  const text = await fs.readFile(csvPath, 'utf-8');
+  let records: ConceptRecord[];
+  try {
+    records = parseConceptsCsv(text);
+  } catch (e) {
+    return { findings: [{ level: 'error', message: e instanceof Error ? e.message : String(e) }] };
+  }
+  return { findings: validateConceptDag(records) };
 }

@@ -27,6 +27,7 @@ import { promisify } from 'node:util';
 import { parseAllowlist, addToAllowlist, packageName } from './viz/allowlist.js';
 import { lintSimSource } from './viz/lint.js';
 import { checkConcepts } from './lessons/clarity.js';
+import { runValidateConcepts } from './courses/concepts.js';
 
 const execFileAsync = promisify(execFile);
 const VIZ_ALLOWLIST = path.join('interactive-book', 'viz-allowlist.json');
@@ -487,6 +488,22 @@ program
     }
     console.log(`\n${files.length} lesson(s): ${errors} error(s), ${warnings} warning(s).`);
     if (errors > 0) process.exit(1);
+  });
+
+program
+  .command('validate-concepts <slug>')
+  .description('Validate book-output/<slug>/concepts.csv is a connected dependency DAG')
+  .action(async (slug: string) => {
+    const { findings } = await runValidateConcepts(slug);
+    const errors = findings.filter((f) => f.level === 'error');
+    for (const f of findings) {
+      console.log(`${f.level === 'error' ? '✗' : '⚠'} ${f.message}`);
+    }
+    if (errors.length === 0) {
+      console.log('✓ concepts.csv is a valid DAG');
+    } else {
+      process.exit(1);
+    }
   });
 
 program.parseAsync().catch((err) => {
