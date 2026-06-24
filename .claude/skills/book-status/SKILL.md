@@ -19,7 +19,7 @@ List all subdirectories in `book-output/`. Each is a book slug.
 
 ### 3. For each book, collect status
 - Read `book-output/<slug>/metadata.json` → title, author, chapterCount.
-- Lesson notes: count `chapter-XX-lesson.md` files in `book-output/<slug>/lessons/`.
+- Lesson notes: count `*-lesson.md` files in `book-output/<slug>/lessons/` (covers both parsed-book `chapter-NN-lesson.md` and authored-course `module-NN-lesson.md` naming).
 - Tutoring progress: run `pnpm exec tsx src/cli.ts progress show <slug>` and parse mastered/total, current chapter, reviews due. (If `progress.json` does not exist yet, this initializes it to chapter 1, 0 mastered.)
 
 ### 4. Print the status table
