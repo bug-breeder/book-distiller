@@ -33,13 +33,13 @@ function parseFrontmatter(md: string): {
   body: string;
   chapter: number;
   title: string;
-  sourceType: 'pdf' | 'epub';
+  sourceType: 'pdf' | 'epub' | 'authored';
   sourceRef: string;
 } {
   const fm = md.match(/^---\n([\s\S]*?)\n---\n?/);
   let chapter = 0;
   let title = '';
-  let sourceType: 'pdf' | 'epub' = 'pdf';
+  let sourceType: 'pdf' | 'epub' | 'authored' = 'pdf';
   let sourceRef = '';
   let body = md;
   if (fm) {
@@ -49,6 +49,7 @@ function parseFrontmatter(md: string): {
     title = (block.match(/^title:\s*"?(.+?)"?\s*$/m)?.[1] ?? '').trim();
     const src = block.match(/^source:\s*\{([^}]*)\}/m)?.[1] ?? '';
     if (/type:\s*epub/.test(src)) sourceType = 'epub';
+    else if (/type:\s*authored/.test(src)) sourceType = 'authored';
     sourceRef = (src.match(/pages:\s*"?([^",}]+)"?/)?.[1] ?? src.match(/anchor:\s*"?([^",}]+)"?/)?.[1] ?? '').trim();
   }
   return { body, chapter, title, sourceType, sourceRef };

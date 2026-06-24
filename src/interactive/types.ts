@@ -89,7 +89,7 @@ export interface ReviewItem {
 export interface ParsedLesson {
   chapter: number;
   title: string;
-  sourceType: 'pdf' | 'epub';
+  sourceType: 'pdf' | 'epub' | 'authored';
   /** e.g. "15-34" for pdf, or an anchor for epub. */
   sourceRef: string;
   /** Numbered teaching-arc lines (name + objective), in teaching order. */

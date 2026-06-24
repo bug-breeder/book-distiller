@@ -187,7 +187,11 @@ export function renderChapter(
   }
 
   const srcLabel =
-    lesson.sourceType === 'pdf' ? `PDF pages ${lesson.sourceRef}` : `source ${lesson.sourceRef}`;
+    lesson.sourceType === 'pdf'
+      ? `PDF pages ${lesson.sourceRef}`
+      : lesson.sourceType === 'authored'
+        ? 'authored'
+        : `source ${lesson.sourceRef}`;
   const figureCount = lesson.visualizations.length + ctx.bookFigures.length + ctx.sims.length;
   out.push(
     `> **Source:** ${mdxText(srcLabel)} · ${lesson.concepts.length} concepts · ${figureCount} figures · ${lesson.reviewItems.length} flashcards`,
