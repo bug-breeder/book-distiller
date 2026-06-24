@@ -28,6 +28,7 @@ import { parseAllowlist, addToAllowlist, packageName } from './viz/allowlist.js'
 import { lintSimSource } from './viz/lint.js';
 import { checkConcepts } from './lessons/clarity.js';
 import { runValidateConcepts } from './courses/concepts.js';
+import { runAuthorScaffold } from './courses/scaffold.js';
 
 const execFileAsync = promisify(execFile);
 const VIZ_ALLOWLIST = path.join('interactive-book', 'viz-allowlist.json');
@@ -502,6 +503,19 @@ program
     if (errors.length === 0) {
       console.log('✓ concepts.csv is a valid DAG');
     } else {
+      process.exit(1);
+    }
+  });
+
+program
+  .command('author-scaffold <slug>')
+  .description('Build metadata.json from book-output/<slug>/course-spec.md + outline.md')
+  .action(async (slug: string) => {
+    try {
+      const meta = await runAuthorScaffold(slug);
+      console.log(`✓ wrote metadata.json (${meta.chapterCount} modules) for "${meta.title}"`);
+    } catch (err) {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
     }
   });
