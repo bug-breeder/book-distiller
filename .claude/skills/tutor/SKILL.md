@@ -33,8 +33,14 @@ For each due item (one at a time): ask the `question`; grade the user's reply ag
 Keep it brisk. If nothing is due, say "No reviews due — straight to new material."
 
 ### 4. Ensure the lesson note for chapter $CH
-Use Glob for `book-output/$SLUG/lessons/chapter-<NN>-lesson.md` (NN = $CH zero-padded to 2).
+Let `$CH_ENTRY` = the chapter entry in `metadata.json` whose `chapterNumber == $CH`.
+Let `$CHAPTER_SLUG` = `$CH_ENTRY.file` with `.md` removed (e.g. `chapter-03.md` → `chapter-03`; `module-02.md` → `module-02`).
+Use Glob for `book-output/$SLUG/lessons/$CHAPTER_SLUG-lesson.md`.
 If missing: print `Prepping chapter $CH…`
+
+**If `metadata.sourceType === 'authored'`:** the lesson note was authored by `/author-course` and must already exist. If it is missing, tell the user to run `/author-course` again to regenerate it, and stop — do NOT dispatch `book-analyst` (there is no `raw-chapters/` source for authored courses).
+
+Otherwise (parsed book — PDF or EPUB):
 
 Read the template from the literal path `.claude/skills/tutor-prep/lesson-note-template.md`.
 

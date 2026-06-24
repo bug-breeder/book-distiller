@@ -23,6 +23,12 @@ Aim for 3–7 concepts. This is the lesson plan the tutor follows top to bottom.
 
 **Worked example:** a fully stepped example with every number and term shown. REQUIRED whenever the concept has any formula or procedure. Use the chapter's own example when it has one.
 
+#### Model answers (OPTIONAL — skill-type courses only)
+Two or more short answers at adjacent band/quality levels so the learner sees the upgrade concretely. For IELTS use `**Band 6:**` and `**Band 7:**` lines. OMIT this block entirely for knowledge-type courses. It never replaces `#### Dig deeper`.
+
+#### Practice (OPTIONAL — skill-type courses only)
+A single practice prompt the learner completes in the live practice loop, plus an `**Assessed:**` line naming what the feedback will judge. OMIT for knowledge-type courses.
+
 (Repeat `### C2`, `### C3`, … for every concept in the teaching arc. Every concept MUST have a `#### Dig deeper` block.)
 
 **Clarity rules (non-negotiable):**

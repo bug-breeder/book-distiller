@@ -35,4 +35,8 @@ export interface BookMetadata {
   parsedAt: string;
   chapterCount: number;
   chapters: ChapterIndex[];
+  /** Present for courses authored from a topic (no parsed source book). */
+  sourceType?: 'authored';
+  /** Skill-type courses additionally get the practice→feedback loop (Phase 2). */
+  courseType?: 'skill' | 'knowledge';
 }
