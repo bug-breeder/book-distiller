@@ -63,6 +63,10 @@ describe('scoreEssay', () => {
     const fetchFn = vi.fn().mockResolvedValue(new Response('no', { status: 401 }));
     await expect(scoreEssay(ARGS, { fetchFn })).rejects.toThrow(AuthError);
   });
+  it('maps 403 to AuthError', async () => {
+    const fetchFn = vi.fn().mockResolvedValue(new Response('forbidden', { status: 403 }));
+    await expect(scoreEssay(ARGS, { fetchFn })).rejects.toThrow(AuthError);
+  });
   it('maps 429 to RateLimitError', async () => {
     const fetchFn = vi.fn().mockResolvedValue(new Response('slow', { status: 429 }));
     await expect(scoreEssay(ARGS, { fetchFn })).rejects.toThrow(RateLimitError);
@@ -75,6 +79,9 @@ describe('scoreEssay', () => {
     expect(out.overall).toBe(6.5);
     expect(fetchFn).toHaveBeenCalledTimes(2);
     expect(String(fetchFn.mock.calls[1][0])).toContain('/api/score');
+    expect((fetchFn.mock.calls[1][1] as RequestInit).headers).toMatchObject({
+      'X-Target': 'https://api.openai.com/v1/chat/completions',
+    });
   });
   it('on a format error, retries once then throws ScoreFormatError', async () => {
     const fetchFn = vi.fn().mockResolvedValue(chatResponse({ ...VALID, overall: 99 } as ScoreResult));
