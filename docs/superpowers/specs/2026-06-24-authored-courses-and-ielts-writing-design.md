@@ -1,7 +1,7 @@
 # Authored Courses Pipeline + IELTS Writing 7.0 Coaching System — Design
 
-**Date:** 2026-06-24
-**Status:** Approved (brainstorming) — pending implementation plan
+**Date:** 2026-06-24 (Phase 2 architecture revised 2026-06-25)
+**Status:** Phase 1 (authoring core) implemented & merged (PR #6). Phase 2 (practice→feedback loop) re-architected to a browser-side, bring-your-own-key scorer — approved (brainstorming), pending implementation plan.
 **Builds on:** `2026-05-31-ai-tutor-design.md` (lesson notes, `/tutor`, progress), `2026-05-11-interactive-learning-design.md` and `2026-06-12-generic-visual-engine-design.md` (Docusaurus + `/visualize` sims). Reuses their downstream pipeline unchanged.
 **References (methodology, not code):** `github.com/dmccreary/intelligent-textbooks` — course-description → Bloom → concept-enumeration → concept-dependency DAG → taxonomy → learning-graph workflow.
 
@@ -14,7 +14,7 @@ Two things are wanted:
 1. **A reusable "topic → interactive coaching system" pipeline** — author a course from a topic description, with the same (and better) interactive book + live tutor + spaced-repetition output study-mate already produces.
 2. **The first course built on it: an IELTS Academic Writing 7.0 course** for the project owner — Vietnamese-L1, strong everyday/professional English (software engineer), no prior IELTS exposure, self-assessed ~5.5. Goal: **band 7.0 in Writing with minimum time-effort**, 2×1-hour lessons/week over 10 weeks.
 
-**Key realization that shaped this design:** IELTS Writing is a *productive skill*, not a body of facts. Reading + flashcards alone do not move a band score — **writing essays and getting them scored against the four official criteria, then revising, does.** Therefore the **practice→feedback loop is the core of the product**, not an add-on. The pipeline is correspondingly made **domain-adaptive**: it distinguishes *knowledge-type* courses (today's behaviour) from *skill-type* courses (which additionally generate a rubric, a practice-prompt bank, and a feedback spec for the live tutor).
+**Key realization that shaped this design:** IELTS Writing is a *productive skill*, not a body of facts. Reading + flashcards alone do not move a band score — **writing essays and getting them scored against the four official criteria, then revising, does.** Therefore the **practice→feedback loop is the core of the product**, not an add-on. The pipeline is correspondingly made **domain-adaptive**: it distinguishes *knowledge-type* courses (today's behaviour) from *skill-type* courses (which additionally generate a rubric, a practice-prompt bank, and a feedback spec driving a browser-side essay scorer).
 
 ## The seam (why this is mostly additive)
 
@@ -27,7 +27,9 @@ KNOWLEDGE-TYPE (and today's parsed flow):
 
 SKILL-TYPE (e.g. IELTS) additionally emits:
                             →  rubric.md, prompts.md (practice bank), feedback-spec.md
-                            →  /practice (essay → graded feedback → trajectory)  (NEW loop)
+                            →  interactive builds practice.json + practice.mdx into the site
+                            →  <PracticeScorer> in the browser: essay → graded feedback
+                               → localStorage trajectory + SM-2 deck  (NEW loop, browser-side)
 ```
 
 ## Goals
@@ -36,12 +38,13 @@ SKILL-TYPE (e.g. IELTS) additionally emits:
 - **Adopt dmccreary's upfront rigor**, scaled to the domain: a structured **course-spec** (audience, prerequisites, Bloom-tagged objectives, assessment), **concept enumeration**, a **concept-dependency DAG**, and a **~10-category color taxonomy**.
 - **Keep study-mate's superior back end**: React sims (not p5 iframes), live AI tutor, enforced clarity contract, spaced repetition.
 - **Learning-graph viewer** (full, in v1): an interactive Docusaurus course-map of the concept DAG, **shaded by per-concept mastery** from `progress.json` (something the reference repo cannot do).
-- **Domain-adaptive skill-type support**: rubric + practice-prompt bank + a **practice→feedback loop** in the live tutor, with a **band/score trajectory** persisted across attempts.
+- **Domain-adaptive skill-type support**: rubric + practice-prompt bank + a **practice→feedback loop that runs in the browser** on the deployed Docusaurus site (Cloudflare Pages), with a **band/score trajectory** persisted in the visitor's `localStorage`.
 - **Deliver the IELTS Academic Writing 7.0 course** as the first run: a sharp, minimum-effort-to-7.0 curriculum (20 sessions / 10 weeks), personalized to a Vietnamese-L1 strong-functional-English learner.
 
 ## Non-goals
 
-- No Anthropic API key / external paid services — all AI runs inside the Claude Code session (unchanged). `WebSearch` grounding during authoring is allowed and optional.
+- **Authoring** AI runs inside the Claude Code session (unchanged); `WebSearch` grounding during authoring is allowed and optional. The **practice scorer is the deliberate exception**: it runs in the visitor's browser against an **OpenAI-compatible API the visitor configures with their own key** (stored only in their `localStorage`). study-mate ships **no API key** in the bundle and runs **no key-holding server** — there is nothing to leak or bill.
+- No auth gate, no shared/pooled key, no accounts. Access control is "bring your own key": a visitor without a key can read the course but cannot score essays.
 - No automated official-style band *certification* — the practice loop gives well-justified estimates against the public band descriptors, explicitly framed as practice feedback, not an official score.
 - Not changing `/parse-book` or the parsed-book path; authored courses are an additional front-end.
 - No new viz library beyond the existing allowlist (the learning-graph viewer uses D3, already allowlisted).
@@ -55,14 +58,18 @@ SKILL-TYPE (e.g. IELTS) additionally emits:
 |---|---|---|
 | `/author-course` | **new skill** | Orchestrates course-spec → concepts.csv (DAG + taxonomy) → outline → per-module lesson notes. Resumable. Detects skill-type vs knowledge-type. |
 | `course-author` | **new agent** | Authoring analog of `book-analyst`: writes one module's lesson note from knowledge + optional `WebSearch`, conforming to the (extended) lesson-note template + clarity lint. |
-| `/practice <slug>` | **new skill** | Skill-type only. Live essay practice: present a prompt from the bank → user writes → grade all criteria with justification + inline error marking → log score → feed recurring errors into the review deck. (May be folded into `/tutor` as a mode; separate command preferred for clarity.) |
+| `<PracticeScorer>` | **new Docusaurus component** | Skill-type only, runs in the browser. Settings (key/baseURL/model in `localStorage`) → prompt picker → essay box → `scoreEssay()` calls the visitor's OpenAI-compatible provider → validated 4-criteria JSON → render (per-criterion bands + inline errors + band-7 rewrites). Appends the attempt + seeds error cards into `localStorage`. Companion `<BandTrajectory>` (Recharts) and `<ReviewDrills>` (persistent SM-2 deck) read the same store. |
+| `scoreEssay` + `practiceStore` + `srs` | **new browser lib** | `src/lib/score.ts` (provider call + `parseScoreResponse` validation gate + error taxonomy + one-retry CORS fallback), `src/lib/practiceStore.ts` (per-slug `localStorage` for attempts + deck), `src/lib/srs.ts` (pure SM-2 ported from `src/progress/schedule.ts`). All pure except the injected `fetch`. |
+| `functions/api/score.ts` | **new Cloudflare Pages Function** | Keyless pass-through that forwards the visitor's `Authorization` header + body to their configured provider with permissive CORS. Holds no secret; used only when a provider blocks browser-origin calls. |
+| `course-author` skill artifacts | **extended** | For skill-type courses, additionally authors `rubric.md` (WebSearch-grounded + descriptor-cited), `prompts.md`, `feedback-spec.md`. |
+| `interactive` generator | **extended (additive)** | For `courseType === 'skill'`, parses the three skill files and emits `practice.json` (config bundle) + `practice.mdx` (mounts `<PracticeScorer>`), reusing the existing co-located-JSON emission pattern. |
 | `LearningGraph` | **new Docusaurus component** | Interactive course-map: nodes = concepts colored by taxonomy, edges = prerequisites, shaded by mastery; click → jump to lesson. D3-based. |
 | `learning-graph` | **new CLI subcommand** | Validate `concepts.csv` is a DAG (no cycles, every concept connected), emit the viewer's JSON; `interactive` embeds the map page. |
 | lesson-note template | **extended (additive)** | Optional skill blocks: `#### Model answers` (banded, e.g. band-6 vs band-7 side by side) and `#### Practice` (prompt + what's assessed). Knowledge-type courses omit them. |
-| `progress.json` schema | **extended (additive)** | Skill courses store a `practice` history: per-attempt criterion scores + date → band/score trajectory; recurring errors become review items. |
+| practice history | **browser `localStorage`** | Skill-course practice state lives **client-side**, not in `progress.json` (the static site has no writable server): `studymate:<slug>:attempts` (per-attempt criterion scores + date → trajectory), `studymate:<slug>:deck` (SM-2 review items seeded from recurring errors), `studymate:<slug>:config` (key/baseURL/model). Essay text is not persisted by default; export-to-JSON + reset are offered. `progress.json` and `/tutor` are unchanged. |
 | frontmatter | **extended** | `source: { type: authored }`; `extract-figures` is a no-op for authored books (no source PDF). |
 
-Reused unchanged: `lint-lessons`, `/visualize` + `sim-author`, `interactive` generator, `SimHost`/`GraphFigure`/`VizControls`, `/tutor`, spaced-repetition scheduler.
+Reused unchanged: `lint-lessons`, `/visualize` + `sim-author`, `SimHost`/`GraphFigure`/`VizControls`, `/tutor`, `progress.json`, the session-only `<Flashcards>`. The `interactive` generator gains an additive skill-course branch; the SM-2 scheduler in `src/progress/schedule.ts` is **ported** (copied as pure functions to `src/lib/srs.ts` for the browser bundle), its Node source unchanged.
 
 ### Authored-course artifacts (`book-output/<slug>/`)
 
@@ -74,14 +81,50 @@ Reused unchanged: `lint-lessons`, `/visualize` + `sim-author`, `interactive` gen
 | `lessons/*.md` | One lesson note per module, existing template + per-concept Bloom tag (+ skill blocks for skill-type). |
 | `rubric.md` *(skill)* | The grading criteria (for IELTS: the four public band descriptors, band 5–8 rows). |
 | `prompts.md` *(skill)* | Practice-prompt bank (Task 1 + Task 2 prompts across question/chart types). |
-| `feedback-spec.md` *(skill)* | How `/practice` grades: criteria, what each band requires, inline-error conventions, what to log. |
+| `feedback-spec.md` *(skill)* | The grading **output contract** shipped to the browser scorer as part of the system prompt: the four criteria, what each band requires, the official rounding rule (mean of TR/CC/LR/GRA → nearest half band), inline-error conventions, the required `descriptorQuote` per criterion, and the exact JSON response shape (`overall`, `criteria{TR,CC,LR,GRA}`, `inlineErrors[]`, `rewrites[]`, `recurringErrorTags[]`). |
+
+### Phase 2 — Practice→feedback loop (detailed architecture)
+
+**Data flow (authoring → build → browser):**
+
+```
+AUTHOR   /author-course (skill-type) → course-author writes rubric.md (WebSearch-grounded,
+         descriptor-cited) + prompts.md (Task 1 & Task 2 bank) + feedback-spec.md (JSON contract)
+BUILD    interactive <slug>, courseType === 'skill' → parse the 3 files →
+         emit docs/<slug>/practice.json (rubric + feedback-spec + prompt bank, NO key) +
+         docs/<slug>/practice.mdx (mounts <PracticeScorer config={practice.json} />)
+BROWSER  visitor sets key/baseURL/model (localStorage) → picks a prompt → writes essay →
+         scoreEssay(): system = rubric + feedback-spec, user = task + prompt + essay,
+         response_format = json_schema → provider (direct; one auto-retry via /api/score on CORS) →
+         parseScoreResponse() validates → render → appendAttempt + seed deck → trajectory + drills
+```
+
+**Grading response contract** (validated client-side by `parseScoreResponse` before any render):
+
+```
+{ overall: number,                                  // 0–9 in .5 steps; mean of the four, rounded to nearest half
+  criteria: { TR|CC|LR|GRA: { band, justification, descriptorQuote } },  // descriptorQuote REQUIRED
+  inlineErrors: [ { quote, type: grammar|lexis|cohesion|task, issue, fix } ],
+  rewrites:     [ { original, improved, why } ],     // band-7 upgrades
+  recurringErrorTags: string[] }                     // seed the SM-2 deck (deduped by tag)
+```
+
+A response missing a criterion, missing a `descriptorQuote`, or with a band outside 0–9/.5 steps is rejected with a typed `ScoreFormatError` — garbage is never rendered.
+
+**Error taxonomy → UX** (no silent failures): `NoKeyError` (prompt to add key) · `AuthError` 401/403 (key rejected) · `RateLimitError` 429 (retry button) · `NetworkError`/CORS (auto-retry once via `/api/score`, then surface) · `ScoreFormatError` (one auto-retry, then manual) · `ProviderError` 5xx. **At most one automatic retry per submit**; everything beyond is a manual retry button (no loops, no double-charging).
+
+**Persistence (per-slug `localStorage`):** `…:config` = `{apiKey, baseURL, model}` (only place the key lives) · `…:attempts` = grade + metadata per attempt (essay text NOT stored by default) · `…:deck` = SM-2 `ReviewItem[]`. Recurring-error tags seed deck cards **deduped by tag** (a repeat error confirms weakness, doesn't duplicate the card). The UI surfaces a privacy note (key + history are local; essay goes only to the configured provider) plus export-to-JSON and per-course reset.
+
+**`<ReviewDrills>` is distinct from the existing session-only `<Flashcards>`** — Flashcards stays untouched; ReviewDrills is a new persistent SM-2 deck over `localStorage`.
+
+**Testing:** pure modules fully unit-tested (`parse*` of the 3 files, `buildPracticeBundle`, `parseScoreResponse` every rejection path, `srs`, `practiceStore` over a storage stub); `scoreEssay` with an injected `fetch` (request shape, CORS→fallback, each error mapping); generator fixture test (emits valid `practice.json` + `practice.mdx`); light React render tests; `pnpm build` as the render gate. **No live-API call in CI** — the provider is always mocked.
 
 ### The four loops (product view)
 
 - **Learn** — interactive book: techniques, decoded band descriptors, banded model answers, sims. *(existing pipeline)*
 - **Drill** — spaced repetition over the memorizable layer: sentence frames, collocations, linkers, the learner's **personal recurring error rules**. *(existing scheduler + new error feed)*
-- **Practice + Feedback** ⭐ — `/practice`: real essay → 4-criteria scores with justification + inline errors + missing band-7 features + targeted upgrades → revise. *(new core)*
-- **Track** — `progress.json` extended with a **score trajectory**; `LearningGraph` map shaded by mastery. *(extend existing)*
+- **Practice + Feedback** ⭐ — `<PracticeScorer>` in the browser: real essay → the visitor's own LLM grades all 4 criteria with descriptor-cited justification + inline errors + band-7 rewrites → revise. *(new core, browser-side, bring-your-own-key)*
+- **Track** — `<BandTrajectory>` (per-criterion + overall band over time) and `<ReviewDrills>` (persistent SM-2 deck) read the visitor's `localStorage`; `LearningGraph` map shaded by mastery from `progress.json`. *(new browser store + extend existing)*
 
 ### IELTS-specific sims (authored by `/visualize`, real study tools)
 
@@ -135,13 +178,15 @@ Outcome: ~7 graded pieces with a visible band trajectory by week 10; the practic
 This is a program, not a single spec. Each phase is implemented in its own plan; the learner can begin studying after Phase 2.
 
 1. **Authoring core + skill-type extension** — `/author-course`, `course-author`, course-spec, concepts.csv (DAG + taxonomy), outline, extended lesson-note template, `authored` frontmatter. Produces the IELTS lesson notes. *Unblocks Learn + Drill.*
-2. **Practice→feedback loop** — `/practice`, rubric/prompts/feedback-spec generation, `progress.json` trajectory + recurring-error feed. *Unblocks the band-moving practice.*
+2. **Practice→feedback loop (browser)** — `course-author` authors rubric/prompts/feedback-spec; `interactive` emits `practice.json` + `practice.mdx`; browser `scoreEssay`/`practiceStore`/`srs` libs; `<PracticeScorer>` + `<BandTrajectory>` + `<ReviewDrills>` components; `functions/api/score.ts` keyless CORS fallback; Cloudflare Pages deploy. Bring-your-own-key, `localStorage` trajectory + SM-2 deck. *Unblocks the band-moving practice.*
 3. **IELTS content pass** — curated model answers (band-6 vs band-7), VN-L1 error clinic, collocation banks, 8-theme vocab, prompt bank.
 4. **Learning-graph viewer + IELTS sims** — `LearningGraph` component + `learning-graph` CLI; the five study-tool sims via `/visualize`.
 
 ## Open questions / risks
 
 - **Skill-type vs knowledge-type detection** — explicit flag on `course-spec` (set during `/author-course`), not heuristic, to avoid misclassification.
-- **Grading reliability** — `/practice` estimates are anchored to the public descriptors and the course rubric; framed as practice feedback. Calibration improves by always citing the descriptor row that justifies each criterion score.
+- **Grading reliability** — scorer estimates are anchored to the public descriptors and the WebSearch-grounded course rubric; framed as practice feedback, never an official score. The required `descriptorQuote` per criterion forces each band onto a cited descriptor row rather than vibes, and `parseScoreResponse` rejects any response that omits it. Quality also depends on the visitor's chosen model — `feedback-spec.md` requests a structured `response_format`, but a weak model still yields weak feedback; this is disclosed.
+- **Browser API-key exposure** — mitigated by design: each visitor supplies their **own** key (stored only in their `localStorage`, sent only to the provider they configure). study-mate ships no key and runs no key-holding server, so there is no shared wallet to drain and nothing to leak from the bundle. The keyless `/api/score` Function forwards the visitor's own `Authorization` header and stores nothing.
+- **Cloudflare Pages** — static Docusaurus `build/` output; Pages Functions dir for `/api/score` only; no env vars, no KV, no secrets in the project. A `wrangler`/Pages config note keeps the deploy reproducible.
 - **Lesson-note template extension** must remain backward-compatible so `lint-lessons` and the `interactive` generator keep working for existing parsed books (the new blocks are optional and ignored when absent).
 - **Concept count discipline** — ~50 skill concepts for IELTS; resist the reference repo's 250-concept default, which suits knowledge domains.
