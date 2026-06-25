@@ -47,6 +47,11 @@ describe('parseScoreResponse', () => {
     bad.criteria.TR.band = 6.3;
     expect(() => parseScoreResponse(JSON.stringify(bad))).toThrow(ScoreFormatError);
   });
+  it('recomputes overall as the rounded mean of the four bands, ignoring the model value', () => {
+    const bad = JSON.parse(JSON.stringify(VALID));
+    bad.overall = 7;           // model claims 7, but bands {6,7,6.5,6.5} mean to 6.5
+    expect(parseScoreResponse(JSON.stringify(bad)).overall).toBe(6.5);
+  });
 });
 
 describe('scoreEssay', () => {

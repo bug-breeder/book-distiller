@@ -53,7 +53,12 @@ export function parseScoreResponse(content: string): ScoreResult {
     ? (o.recurringErrorTags as unknown[]).filter((t): t is string => typeof t === 'string')
     : [];
 
-  return { overall: o.overall, criteria: outCriteria, inlineErrors, rewrites, recurringErrorTags };
+  const roundToHalf = (n: number): number => Math.round(n * 2) / 2;
+  const overall = roundToHalf(
+    (outCriteria.TR.band + outCriteria.CC.band + outCriteria.LR.band + outCriteria.GRA.band) / 4,
+  );
+
+  return { overall, criteria: outCriteria, inlineErrors, rewrites, recurringErrorTags };
 }
 
 const SCORE_SCHEMA = {
