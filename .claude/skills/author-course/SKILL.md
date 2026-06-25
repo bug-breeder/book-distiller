@@ -62,5 +62,25 @@ For each module in `metadata.chapters`, in order:
   ```
   If it exits non-zero for a concept in the just-written module (missing `#### Dig deeper`), re-dispatch that module once instructing the agent to add the missing block. Warnings are advisory.
 
-### 9. Report completion
+### 9. Author practice assets (skill-type courses only)
+
+If `course-spec` `type` is `skill`, author the practice→feedback assets that drive
+the browser scorer. Read `${CLAUDE_SKILL_DIR}/practice-assets-format.md`, then
+dispatch one `course-author` agent with this delegation message:
+
+```
+Author the practice assets for a skill-type course.
+Write three files:
+  - book-output/<slug>/rubric.md
+  - book-output/<slug>/feedback-spec.md
+  - book-output/<slug>/prompts.md
+Course: <metadata.title>
+Ground rubric.md in the official public IELTS band descriptors via WebSearch and
+cite them. Follow this format exactly:
+<full contents of practice-assets-format.md>
+```
+
+Wait for completion. Verify all three files exist before finishing.
+
+### 10. Report completion
 List the generated lesson notes. Suggest next steps: `/visualize <slug>`, then `pnpm exec tsx src/cli.ts interactive <slug>`, then `/tutor <slug>`.

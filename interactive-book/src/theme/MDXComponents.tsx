@@ -6,6 +6,9 @@ import Check from '@site/src/components/Check';
 import Callout from '@site/src/components/Callout';
 import BookFigure from '@site/src/components/BookFigure';
 import DigDeeper from '@site/src/components/DigDeeper';
+import PracticeScorer from '@site/src/components/PracticeScorer';
+import BandTrajectory from '@site/src/components/BandTrajectory';
+import ReviewDrills from '@site/src/components/ReviewDrills';
 
 // Registered globally so generated MDX can use <SimHost/>, <GraphFigure/>,
 // <Flashcards/>, etc. without per-file imports. Per-concept sims are imported
@@ -19,4 +22,7 @@ export default {
   Callout,
   BookFigure,
   DigDeeper,
+  PracticeScorer,
+  BandTrajectory,
+  ReviewDrills,
 };

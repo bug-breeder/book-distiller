@@ -8,6 +8,7 @@ import type { BookMetadata, ChapterIndex } from '../parser/types.js';
 import type { FigureImage } from '../figures/images.js';
 import { parseLesson } from './parse.js';
 import type { Concept, FigureRef, GraphFigureSpec, ParsedLesson, SimEntry } from './types.js';
+import { readPracticeAssets, buildPracticeBundle, renderPracticeMdx } from '../courses/practice.js';
 
 const SITE_DOCS = path.join('interactive-book', 'docs');
 const SITE_STATIC = path.join('interactive-book', 'static');
@@ -401,6 +402,19 @@ export async function generateInteractiveBook(slug: string): Promise<GenerateRes
   // Landing page (regenerated from all generated books).
   await fs.ensureDir(SITE_DOCS);
   await fs.writeFile(path.join(SITE_DOCS, 'intro.mdx'), await renderLanding(), 'utf-8');
+
+  if (meta.courseType === 'skill') {
+    const assets = await readPracticeAssets(slug);
+    if (assets) {
+      const bundle = buildPracticeBundle(slug, meta.title, assets.rubric, assets.feedbackSpec, assets.prompts);
+      const practiceJsonPath = path.join(bookDocs, 'practice.json');
+      const practiceMdxPath = path.join(bookDocs, 'practice.mdx');
+      await fs.ensureDir(bookDocs);
+      await fs.writeJson(practiceJsonPath, bundle, { spaces: 0 });
+      await fs.writeFile(practiceMdxPath, renderPracticeMdx(slug, meta.title), 'utf-8');
+      written.push(practiceMdxPath);
+    }
+  }
 
   return { written, prepared: preparedNumbers.size, total: meta.chapterCount, skipped };
 }

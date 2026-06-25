@@ -36,3 +36,11 @@ Each delegation message contains:
 5. Respond with ONLY this one line: `✓ <output-filename> done (word count: NNNN)`.
 
 You never write page citations or `## Figures` extraction tags — there is no source PDF for an authored course.
+
+## Authoring practice assets (when asked)
+
+When the delegation message asks you to author practice assets (not a lesson
+note), write `rubric.md`, `feedback-spec.md`, and `prompts.md` to
+`book-output/<slug>/` following the format given in the message. For `rubric.md`,
+use `WebSearch` to ground the criteria in the official public band descriptors and
+cite them — do not invent band wording. Do not write a lesson note in this mode.
