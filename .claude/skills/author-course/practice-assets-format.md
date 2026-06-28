@@ -18,6 +18,11 @@ system prompt; write it so a grader could quote a specific line per criterion.
 
 The output contract. State explicitly:
 - Grade all four criteria (TR, CC, LR, GRA), each a whole or half band 0–9.
+- The four `criteria` JSON keys are ALWAYS exactly `TR`, `CC`, `LR`, `GRA` — the
+  browser scorer's validator rejects any other key. If a criterion has a
+  task-specific name (e.g. IELTS Task 1's first criterion is "Task Achievement",
+  Task 2's is "Task Response"), keep the key `TR` and note the task-specific name
+  in that criterion's `justification` / `descriptorQuote`. Never rename a key.
 - `overall` = mean of the four criterion bands, rounded to the nearest half band.
 - For each criterion, return `band`, a `justification`, and a `descriptorQuote`
   (the exact band-descriptor line the essay was matched against — REQUIRED).

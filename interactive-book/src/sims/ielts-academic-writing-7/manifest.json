@@ -1,0 +1,133 @@
+{
+  "slug": "ielts-academic-writing-7",
+  "sims": [
+    {
+      "chapter": 1,
+      "concept": "The Four Marking Criteria",
+      "title": "Band Score Calculator",
+      "caption": "Drag each criterion band to see how the mean rounds to your overall Writing band.",
+      "file": "ch1/the-four-marking-criteria.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 2,
+      "concept": "Conditional Sentences",
+      "title": "Conditional Tense Patterns",
+      "caption": "Toggle between zero, first, and second conditionals to see how the tense shift signals epistemic distance.",
+      "file": "ch2/conditional-sentences.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 3,
+      "concept": "Articles A An The",
+      "title": "Article Decision Trainer",
+      "caption": "Step through the three-question decision flow for each noun phrase and pick the right article.",
+      "file": "ch3/articles-a-an-the.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 4,
+      "concept": "Punctuation For Complex Sentences",
+      "title": "Punctuation For Complex Sentences",
+      "caption": "Cycle through punctuation variants for each sentence and see whether the result is correct or a named error.",
+      "file": "ch4/punctuation-for-complex-sentences.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 5,
+      "concept": "The Five Task 2 Question Types",
+      "title": "Question-Type Classifier Drill",
+      "caption": "Read each prompt, choose the question type, then reveal the signal phrase that tells you.",
+      "file": "ch5/the-five-task-2-question-types.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 7,
+      "concept": "Developing And Extending Ideas",
+      "title": "Idea Extension Chain",
+      "caption": "Step through the domino chain — see where Band 6 stops and where Band 7 keeps going.",
+      "file": "ch7/developing-and-extending-ideas.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 8,
+      "concept": "Cohesive Devices Without Overuse",
+      "title": "Linker Density Sweet Spot",
+      "caption": "Slide the linker count from 0 to 6 and watch the paragraph change — too few leaves ideas unconnected; too many reads as mechanical padding.",
+      "file": "ch8/cohesive-devices-without-overuse.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 11,
+      "concept": "Collocation Aware Synonyms",
+      "title": "Collocation Synonym Picker",
+      "caption": "Choose a frame, then tap a synonym to see whether it collocates naturally. Notice how thesaurus alternatives split into safe and unsafe.",
+      "file": "ch11/collocation-aware-synonyms.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 12,
+      "concept": "Topic Vocabulary Banks Eight Themes",
+      "title": "Theme Vocabulary Quiz",
+      "caption": "Choose a theme, then complete each collocation — covers all eight high-frequency IELTS topics.",
+      "file": "ch12/topic-vocabulary-banks-eight-themes.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 13,
+      "concept": "Trend Language Families",
+      "title": "Trend Language Matcher",
+      "caption": "Pick a chart shape — the matching verbs, adverbs, and noun forms light up. Intensity must match slope.",
+      "file": "ch13/trend-language-families.tsx",
+      "libs": ["recharts"]
+    },
+    {
+      "chapter": 14,
+      "concept": "Line Graphs And Trends",
+      "title": "Key Features: Line, Bar & Table",
+      "caption": "Toggle between chart types. Click \"Highlight key features\" to see which data points to select — and why the others can be safely omitted.",
+      "file": "ch14/line-graphs-and-trends.tsx",
+      "libs": ["recharts"]
+    },
+    {
+      "chapter": 15,
+      "concept": "Pie Charts And Proportion Language",
+      "title": "Pie Proportion Language",
+      "caption": "Click a slice to see how to describe its share using Band 7 proportion phrases — not \"the percentage of X is …\".",
+      "file": "ch15/pie-charts-and-proportion-language.tsx",
+      "libs": ["recharts"]
+    },
+    {
+      "chapter": 15,
+      "concept": "Mixed And Multiple Charts",
+      "title": "Mixed Charts — Link Sentence Builder",
+      "caption": "See how a line graph and a pie chart share one overview. Click \"Reveal link sentence\" to see the Band 7 move that connects the two visuals.",
+      "file": "ch15/mixed-and-multiple-charts.tsx",
+      "libs": ["recharts"]
+    },
+    {
+      "chapter": 16,
+      "concept": "Data Accuracy And No Opinion Rule",
+      "title": "Approximation Language Trainer",
+      "caption": "Drag the bar to any value. See when to hedge (\"approximately 35%\") vs. when to be precise (\"exactly 25%\") — and why adding a reason always breaks the No Opinion Rule.",
+      "file": "ch16/data-accuracy-and-no-opinion-rule.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 17,
+      "concept": "Exam Timing Strategy 60 Minutes",
+      "title": "60-Minute Exam Timing Planner",
+      "caption": "Allocate plan / write / check minutes across both tasks and see whether your split honours the 2/3 rule and word-count pace.",
+      "file": "ch17/exam-timing-strategy-60-minutes.tsx",
+      "libs": []
+    },
+    {
+      "chapter": 18,
+      "concept": "Upgrading Band 6 To Band 7 Sentences",
+      "title": "Band 6 → Band 7 Upgrade Walkthrough",
+      "caption": "Step through each upgrade move — Fix error first, then Combine, then Collocate — and see exactly what changes at each stage.",
+      "file": "ch18/upgrading-band-6-to-band-7-sentences.tsx",
+      "libs": []
+    }
+  ]
+}
